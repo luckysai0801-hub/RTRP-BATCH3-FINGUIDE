@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – FIN GUIDE</title>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+    <ul class="nav-links">
+      <li><a href="/credit-cards.html">Credit Cards</a></li>
+      <li><a href="/loans.html">Loans</a></li>
+      <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button onclick="logout()" class="btn btn-secondary btn-sm" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-user">
+      <div class="label">Signed in as</div>
+      <div class="name" id="sidebarName">User</div>
+      <div class="email" id="sidebarEmail"></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#overview" class="active" onclick="showTab('overview');return false;" id="nav-overview">
+        <span class="icon">📊</span> Overview
+      </a>
+      <a href="#profile" onclick="showTab('profile');return false;" id="nav-profile">
+        <span class="icon">👤</span> My Profile
+      </a>
+      <a href="#comparisons" onclick="showTab('comparisons');return false;" id="nav-comparisons">
+        <span class="icon">🔖</span> Saved Items
+      </a>
+      <a href="#recommendations" onclick="showTab('recommendations');return false;" id="nav-recommendations">
+        <span class="icon">🤖</span> My Picks
+      </a>
+      <div style="margin:12px 0;border-top:1px solid rgba(255,255,255,.07);"></div>
+      <a href="/credit-cards.html"><span class="icon">💳</span> Browse Cards</a>
+      <a href="/loans.html"><span class="icon">🏠</span> Browse Loans</a>
+      <a href="/fixed-deposits.html"><span class="icon">📈</span> Browse FDs</a>
+    </nav>
+  </aside>
+
+  <main class="dash-content">
+
+    <!-- ── Overview Tab ── -->
+    <div id="tab-overview">
+      <!-- Alert strip for rate changes -->
+      <div class="alert-strip info" id="rateAlertStrip" style="display:none;">
+        <span>📢</span>
+        <span id="rateAlertMsg">Interest rates updated today — check the latest FD offers!</span>
+        <a href="/fixed-deposits.html" style="margin-left:auto;font-weight:700;color:var(--accent);font-size:.82rem;">View FDs →</a>
+      </div>
+
+      <h1 id="welcomeMsg" style="margin-bottom:20px;">Welcome back!</h1>
+
+      <!-- Top metric tiles -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statCC">55+</div>
+          <div class="stat-label">Credit Cards Available</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statLoans">12</div>
+          <div class="stat-label">Loan Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statFDs">14</div>
+          <div class="stat-label">FD Schemes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statSaved">0</div>
+          <div class="stat-label">Saved Comparisons</div>
+        </div>
+      </div>
+
+      <!-- Quick picks with compare CTA -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:28px 0 16px;">
+        <h2 style="font-size:1.1rem;">🤖 Your Quick Picks</h2>
+        <a href="/recommendations.html" class="btn btn-secondary btn-sm">Get Full Picks →</a>
+      </div>
+      <div id="quickPickCards" class="product-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+
+    <!-- ── Profile Tab ── -->
+    <div id="tab-profile" hidden>
+      <h1 style="margin-bottom:24px;">My Profile</h1>
+      <div style="background:white;border:var(--card-border);border-radius:var(--radius);padding:28px;max-width:540px;box-shadow:var(--shadow-card);">
+        <div class="alert alert-success" id="profileSuccess" hidden>Profile updated successfully!</div>
+        <div class="form-group"><label>Full Name</label><input type="text" id="pName"/></div>
+        <div class="form-group"><label>Email</label><input type="email" id="pEmail" disabled style="opacity:.6;"/></div>
+        <div class="form-group"><label>Monthly Income (₹)</label><input type="number" id="pSalary"/></div>
+        <div class="form-group">
+          <label>Primary Spending</label>
+          <select id="pSpending">
+            <option value="">Select</option>
+            <option value="travel">Travel</option>
+            <option value="shopping">Shopping</option>
+            <option value="dining">Dining</option>
+            <option value="fuel">Fuel</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Risk Appetite</label>
+          <select id="pRisk">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="saveProfile">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- ── Saved Items Tab ── -->
+    <div id="tab-comparisons" hidden>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <h1>Saved Comparisons</h1>
+        <a href="/credit-cards.html" class="btn btn-secondary btn-sm">+ Compare Cards</a>
+      </div>
+      <div id="comparisonsContent">
+        <p style="color:var(--text-muted);">Loading…</p>
+      </div>
+    </div>
+
+    <!-- ── Recommendations Tab ── -->
+    <div id="tab-recommendations" hidden>
+      <h1 style="margin-bottom:6px;">Personalized Recommendations</h1>
+      <p style="color:var(--text-muted);margin-bottom:24px;font-size:.875rem;">Based on your profile: income, spending style &amp; risk appetite</p>
+      <div id="dashRecCards" class="product-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- FinBot -->
+<button class="chat-toggle" id="chatToggle">💬</button>
+<div class="chat-bubble" id="chatBubble" hidden>
+  <div class="chat-header"><span>🤖 FinBot</span><button id="chatClose">&times;</button></div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="Ask me anything…"/>
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  // Auth guard
+  const token = FinAPI.getToken();
+  const user = FinAPI.getUser();
+  if (!token || !user) location.href = '/login.html';
+  if (user?.role === 'admin') location.href = '/admin-dashboard.html';
+
+  document.getElementById('sidebarName').textContent = user?.name || '';
+  document.getElementById('sidebarEmail').textContent = user?.email || '';
+  document.getElementById('welcomeMsg').textContent = `Welcome back, ${user?.name?.split(' ')[0] || ''}! 👋`;
+
+  // Pre-fill profile
+  document.getElementById('pName').value = user?.name || '';
+  document.getElementById('pEmail').value = user?.email || '';
+  document.getElementById('pSalary').value = user?.monthly_salary || '';
+  if (user?.spending_profile) document.getElementById('pSpending').value = user.spending_profile;
+  if (user?.risk_appetite) document.getElementById('pRisk').value = user.risk_appetite;
+
+  // Show rate alert strip (simulate — could be from API)
+  setTimeout(() => document.getElementById('rateAlertStrip').style.display = 'flex', 600);
+
+  // Load stats
+  FinAPI.get('/api/credit-cards?limit=1').then(d => { if (d.count) document.getElementById('statCC').textContent = d.count; });
+  FinAPI.get('/api/loans?limit=1').then(d => { if (d.count) document.getElementById('statLoans').textContent = d.count; });
+  FinAPI.get('/api/fds?limit=1').then(d => { if (d.count) document.getElementById('statFDs').textContent = d.count; });
+
+  // Load quick picks
+  const rparams = new URLSearchParams({ risk_appetite: user?.risk_appetite || 'medium', limit: 3 });
+  if (user?.monthly_salary) rparams.set('monthly_salary', user.monthly_salary);
+  if (user?.spending_profile) rparams.set('spending_profile', user.spending_profile);
+  FinAPI.get(`/api/recommendations?${rparams}`).then(d => {
+    if (!d.success) return;
+    const { cards } = d.data;
+    document.getElementById('quickPickCards').innerHTML = cards.slice(0, 3).map(c => `
+  <div class="product-card">
+    <div class="product-card-top">
+      <span class="badge badge-${c.rewards_type}">${(c.rewards_type||'').toUpperCase()}</span>
+    </div>
+    <h3 style="margin-top:10px;">${c.card_name}</h3>
+    <p class="bank-name">${c.bank_name||c.bank?.name||''}</p>
+    <div class="product-meta">
+      <span>Fee: <strong>₹${(c.annual_fee||0).toLocaleString('en-IN')}</strong></span>
+      <span>Rating: <strong>⭐ ${c.rating}</strong></span>
+    </div>
+    <div class="product-card-actions">
+      <a href="${c.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply Now</a>
+      <a href="/credit-cards.html" class="btn btn-secondary btn-sm">Compare</a>
+    </div>
+  </div>`).join('');
+  });
+
+  // Load saved comparisons
+  FinAPI.get('/api/saved-comparisons').then(d => {
+    const cnt = d.data?.length || 0;
+    document.getElementById('statSaved').textContent = cnt;
+
+    if (cnt === 0) {
+      document.getElementById('comparisonsContent').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">🔖</div>
+      <h3>No saved comparisons yet</h3>
+      <p>Go compare some cards or FDs and save them here for later.</p>
+      <a href="/credit-cards.html" class="btn btn-primary">Browse Cards</a>
+    </div>`;
+      return;
+    }
+
+    document.getElementById('comparisonsContent').innerHTML = `
+  <div class="product-grid">${d.data.map(c => `
+    <div class="product-card">
+      <h3>${c.label||'Comparison '+c.id}</h3>
+      <p class="bank-name">${(c.product_type||'').toUpperCase()}</p>
+      <div class="product-meta">
+        <span>Products: <strong>${c.product_ids?.length||2}</strong></span>
+        <span>Saved: <strong>${new Date(c.created_at).toLocaleDateString('en-IN')}</strong></span>
+      </div>
+      ${c.notes?`<p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">${c.notes}</p>`:''}
+      <div class="product-card-actions">
+        <button onclick="deleteComparison(${c.id})" class="btn btn-secondary btn-sm">Delete</button>
+      </div>
+    </div>`).join('')}</div>`;
+  });
+
+  function showTab(name) {
+    ['overview','profile','comparisons','recommendations'].forEach(t => {
+      document.getElementById(`tab-${t}`).hidden = t !== name;
+      const nav = document.getElementById(`nav-${t}`);
+      if (nav) nav.classList.toggle('active', t === name);
+    });
+    return false;
+  }
+
+  document.getElementById('saveProfile').addEventListener('click', async () => {
+    const data = await FinAPI.put('/api/auth/profile', {
+      name: document.getElementById('pName').value,
+      monthly_salary: document.getElementById('pSalary').value,
+      spending_profile: document.getElementById('pSpending').value,
+      risk_appetite: document.getElementById('pRisk').value,
+    });
+    if (data.success) {
+      const updated = { ...user, ...data.data };
+      localStorage.setItem('fg_user', JSON.stringify(updated));
+      document.getElementById('profileSuccess').hidden = false;
+      setTimeout(() => document.getElementById('profileSuccess').hidden = true, 3000);
+    } else { FinAPI.toast(data.message || 'Update failed', 'error'); }
+  });
+
+  async function deleteComparison(id) {
+    if (!confirm('Delete this comparison?')) return;
+    const data = await FinAPI.del(`/api/saved-comparisons/${id}`);
+    if (data.success) location.reload();
+    else FinAPI.toast(data.message, 'error');
+  }
+
+  function logout() {
+    localStorage.removeItem('fg_token');
+    localStorage.removeItem('fg_user');
+    location.href = '/';
+  }
+</script>
+</body>
+</html>

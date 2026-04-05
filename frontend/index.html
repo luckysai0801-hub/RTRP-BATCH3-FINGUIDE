@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FIN GUIDE – Smart Financial Comparison</title>
+  <meta name="description" content="Compare India's best credit cards, loans, and fixed deposits. Get personalized recommendations powered by real-time data."/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/credit-cards.html">Credit Cards</a></li>
+      <li><a href="/loans.html">Loans</a></li>
+      <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+      <li><a href="/recommendations.html">AI Picks</a></li>
+    </ul>
+    <div class="nav-actions" id="navActions">
+      <a href="/admin-login.html" class="btn btn-secondary btn-sm">Admin Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">🇮🇳 India's #1 Financial Comparison Platform</div>
+      <h1>Compare, Save &amp;<br/><span class="accent">Invest Smarter</span></h1>
+      <p class="hero-sub">55+ credit cards · 12+ loans · 14+ FD schemes from India's top banks — all in one place, updated daily.</p>
+      <div class="hero-actions">
+        <a href="/credit-cards.html" class="btn btn-primary btn-lg" id="heroCompareBtn">Compare Cards</a>
+        <a href="/recommendations.html" class="btn btn-secondary btn-lg" id="heroPicksBtn">Get AI Picks</a>
+      </div>
+      <!-- 4-KPI stat band -->
+      <div class="hero-kpis">
+        <div class="kpi-item">
+          <div class="kpi-value" id="statCards">55+</div>
+          <div class="kpi-label">Credit Cards</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-value" id="statLoans">12+</div>
+          <div class="kpi-label">Loan Products</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-value" id="statFDs">14+</div>
+          <div class="kpi-label">FD Schemes</div>
+        </div>
+        <div class="kpi-item">
+          <div class="kpi-value">18+</div>
+          <div class="kpi-label">Banks</div>
+        </div>
+      </div>
+    </div>
+    <!-- Animated card stack -->
+    <div class="hero-visual">
+      <div class="floating-card card-hdfc">
+        <div class="card-chip"></div>
+        <div class="card-bank">HDFC Bank</div>
+        <div class="card-number">•••• •••• •••• 4321</div>
+        <div class="card-name">REGALIA GOLD</div>
+      </div>
+      <div class="floating-card card-sbi">
+        <div class="card-chip"></div>
+        <div class="card-bank">SBI Card</div>
+        <div class="card-number">•••• •••• •••• 8765</div>
+        <div class="card-name">CASHBACK CARD</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bank logo strip ── -->
+<div class="bank-strip">
+  <div class="bank-strip-inner">
+    <span class="bank-logo-item">HDFC Bank</span>
+    <span class="bank-logo-item">SBI Card</span>
+    <span class="bank-logo-item">ICICI Bank</span>
+    <span class="bank-logo-item">Axis Bank</span>
+    <span class="bank-logo-item">Kotak Bank</span>
+    <span class="bank-logo-item">Yes Bank</span>
+    <span class="bank-logo-item">IDFC First</span>
+    <span class="bank-logo-item">IndusInd</span>
+    <span class="bank-logo-item">AU Small Finance</span>
+  </div>
+</div>
+
+<!-- ── 3-col Feature Grid ── -->
+<section>
+  <div class="container">
+    <span class="section-eyebrow">What are you looking for?</span>
+    <h2 class="section-title">Browse by Category</h2>
+    <div class="feature-grid" id="featureGrid">
+      <a href="/credit-cards.html?rewards_type=cashback" class="feature-card" id="featCashback">
+        <div class="feature-icon">💰</div>
+        <h3>Cashback Cards</h3>
+        <p>Earn percentage back on every purchase, automatically credited every month.</p>
+      </a>
+      <a href="/credit-cards.html?rewards_type=travel" class="feature-card" id="featTravel">
+        <div class="feature-icon">✈️</div>
+        <h3>Travel Cards</h3>
+        <p>Airport lounge access, air miles &amp; worldwide travel insurance included.</p>
+      </a>
+      <a href="/credit-cards.html?max_fee=0" class="feature-card" id="featFree">
+        <div class="feature-icon">🆓</div>
+        <h3>Free for Life</h3>
+        <p>Zero annual fee cards with real reward value. No catch, lifetime free.</p>
+      </a>
+      <a href="/loans.html?loan_type=home" class="feature-card" id="featHome">
+        <div class="feature-icon">🏠</div>
+        <h3>Home Loans</h3>
+        <p>Interest rates starting from 8.40% p.a. Compare leading bank offers.</p>
+      </a>
+      <a href="/loans.html?loan_type=personal" class="feature-card" id="featPersonal">
+        <div class="feature-icon">👤</div>
+        <h3>Personal Loans</h3>
+        <p>Instant disbursal, no collateral required. Disbursed in as fast as 4 hours.</p>
+      </a>
+      <a href="/fixed-deposits.html" class="feature-card" id="featFD">
+        <div class="feature-icon">📈</div>
+        <h3>Fixed Deposits</h3>
+        <p>Guaranteed returns up to 9% p.a. from PSU banks, private banks &amp; NBFCs.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Top Rated Cards ── -->
+<section style="background:white; border-top:var(--card-border); border-bottom:var(--card-border);">
+  <div class="container">
+    <span class="section-eyebrow">Top Rated</span>
+    <h2 class="section-title">🏆 Best Credit Cards Right Now</h2>
+    <div class="product-grid" id="topCardsGrid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+    <a href="/credit-cards.html" class="btn btn-secondary center-btn" id="viewAllCardsBtn">View All 55+ Cards →</a>
+  </div>
+</section>
+
+<!-- ── FD Rates ── -->
+<section class="rates-section">
+  <div class="container">
+    <span class="section-eyebrow">Live Rates</span>
+    <h2 class="section-title">🔥 Best FD Rates Right Now</h2>
+    <div class="rates-grid" id="topFDsGrid">
+      <div class="skeleton-card" style="height:110px;"></div>
+      <div class="skeleton-card" style="height:110px;"></div>
+      <div class="skeleton-card" style="height:110px;"></div>
+      <div class="skeleton-card" style="height:110px;"></div>
+    </div>
+    <a href="/fixed-deposits.html" class="btn btn-primary center-btn" id="compareAllFDsBtn">Compare All FDs</a>
+  </div>
+</section>
+
+<!-- ── Calculator CTA ── -->
+<section style="background:white; border-top:var(--card-border);">
+  <div class="container">
+    <span class="section-eyebrow">Free Tools</span>
+    <h2 class="section-title">Plan Your Finances</h2>
+    <div class="calc-cards">
+      <div class="calc-card" id="calcEMICard">
+        <div class="calc-icon">🔢</div>
+        <h3>EMI Calculator</h3>
+        <p>Find your exact monthly payment for any loan amount and tenure.</p>
+        <a href="/loans.html#emi-calculator" class="btn btn-secondary" id="calcEMIBtn">Calculate EMI</a>
+      </div>
+      <div class="calc-card highlight" id="calcAICard">
+        <div class="calc-icon">🤖</div>
+        <h3>AI Recommendation</h3>
+        <p>Get personalized card &amp; FD picks based on your income and lifestyle.</p>
+        <a href="/recommendations.html" class="btn btn-primary" id="calcAIBtn">Get My Picks</a>
+      </div>
+      <div class="calc-card" id="calcFDCard">
+        <div class="calc-icon">📊</div>
+        <h3>FD Calculator</h3>
+        <p>See your maturity amount for any fixed deposit scheme instantly.</p>
+        <a href="/fixed-deposits.html#fd-calculator" class="btn btn-secondary" id="calcFDBtn">Calculate FD</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Chatbot ── -->
+<button class="chat-toggle" id="chatToggle" title="Ask FinBot">💬</button>
+<div class="chat-bubble" id="chatBubble" hidden>
+  <div class="chat-header">
+    <span>🤖 FinBot</span>
+    <button id="chatClose">&times;</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">👋 Hi! I'm FinBot. Ask me about credit cards, loans, or FDs!</div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="Ask anything..." autocomplete="off"/>
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="/" class="logo">FIN<span>GUIDE</span></a>
+        <p>India's smart financial comparison platform. Powered by real-time data from top banks.</p>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/credit-cards.html">Credit Cards</a></li>
+          <li><a href="/loans.html">Loans</a></li>
+          <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="/recommendations.html">AI Recommendations</a></li>
+          <li><a href="/loans.html#emi-calculator">EMI Calculator</a></li>
+          <li><a href="/fixed-deposits.html#fd-calculator">FD Calculator</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <ul>
+          <li><a href="/login.html">Login</a></li>
+          <li><a href="/signup.html">Sign Up</a></li>
+          <li><a href="/admin-login.html">Admin Login</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 FIN GUIDE. Data for informational purposes only. Always verify with banks before applying.</p>
+      <p style="color:var(--text-faint);">Made with ❤️ in India</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/chat.js"></script>
+<script>
+(function(){
+  FinAPI.renderNav('navActions');
+
+  // Hamburger
+  document.getElementById('hamburger').addEventListener('click', function() {
+    const links = document.getElementById('navLinks');
+    links.classList.toggle('open');
+    this.setAttribute('aria-expanded', links.classList.contains('open'));
+  });
+
+  // Load top 3 cards
+  FinAPI.get('/api/credit-cards?sort=rating&limit=3').then(d => {
+    const g = document.getElementById('topCardsGrid');
+    if (!d.success || !d.data.length) { g.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;">Unable to load cards.</p>'; return; }
+    g.innerHTML = d.data.map((c, i) => `
+      <div class="product-card" id="topCard${i}">
+        ${i === 0 ? '<div class="best-badge">TOP RATED</div>' : ''}
+        <div class="product-card-top">
+          <span class="badge badge-${c.rewards_type}">${c.rewards_type?.toUpperCase()}</span>
+          <span style="font-size:.82rem;color:var(--text-muted);">⭐ ${c.rating}</span>
+        </div>
+        <h3>${c.card_name}</h3>
+        <p class="bank-name">${c.bank_name || c.bank?.name || ''}</p>
+        <div class="product-meta">
+          <span>Annual Fee: <strong>₹${(c.annual_fee||0).toLocaleString('en-IN')}</strong></span>
+          ${c.cashback > 0 ? `<span>Cashback: <strong>${c.cashback}%</strong></span>` : ''}
+        </div>
+        <div class="product-card-actions">
+          <a href="${c.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply Now</a>
+        </div>
+      </div>`).join('');
+  }).catch(() => { document.getElementById('topCardsGrid').innerHTML = '<p style="color:var(--text-muted)">Unable to load cards.</p>'; });
+
+  // Load top 4 FDs
+  FinAPI.get('/api/fds?sort=rate&limit=4').then(d => {
+    const g = document.getElementById('topFDsGrid');
+    if (!d.success) { g.innerHTML = ''; return; }
+    g.innerHTML = d.data.slice(0,4).map((f,i) => `
+      <div class="rate-card" id="topFD${i}">
+        <div class="rate-bank">${f.bank_name || f.bank?.name || ''}</div>
+        <div class="rate-num">${f.interest_rate}%</div>
+        <div class="rate-label">p.a. · ${f.compounding_frequency || 'quarterly'}</div>
+        <div class="rate-senior">Senior: ${f.senior_citizen_rate}%</div>
+      </div>`).join('');
+  });
+})();
+</script>
+</body>
+</html>

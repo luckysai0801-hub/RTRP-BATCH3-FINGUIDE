@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – FIN GUIDE</title>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg);padding:40px 24px;">
+
+  <div style="width:100%;max-width:400px;">
+
+    <!-- Admin portal label -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+      <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--text);">
+        FIN<span style="color:var(--accent);">GUIDE</span>
+      </div>
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--danger);margin-top:6px;">
+        Admin Portal
+      </div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Restricted access — authorized users only</p>
+    </div>
+
+    <div style="background:white;border:var(--card-border);border-radius:16px;padding:32px;box-shadow:var(--shadow-md);">
+
+      <div id="loginError" style="display:none;" class="alert alert-error"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="adminEmail">Email Address</label>
+          <input type="email" id="adminEmail" placeholder="admin@finguide.com" required autocomplete="username"/>
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="adminPassword" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:44px;"/>
+            <button type="button" id="togglePwd" class="pwd-toggle">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn" style="margin-top:8px;">
+          <span id="loginText">🔐 Sign In</span>
+          <span id="loginSpinner" class="spinner" hidden></span>
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:var(--card-border);">
+        <a href="/" style="font-size:.82rem;color:var(--text-muted);">← Back to FIN GUIDE</a>
+      </div>
+    </div>
+
+    <!-- Secure footer note -->
+    <p style="text-align:center;margin-top:16px;font-size:.72rem;color:var(--text-faint);line-height:1.6;">
+      Secure · Private network only<br/>
+      🔒 Protected by JWT authentication. Sessions expire after 7 days.
+    </p>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (localStorage.getItem('fg_token')) {
+      window.location.href = '/admin-dashboard.html';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('loginError');
+      document.getElementById('loginText').style.display = 'none';
+      document.getElementById('loginSpinner').hidden = false;
+      btn.disabled = true;
+      errEl.style.display = 'none';
+
+      try {
+        const data = await window.FinAPI.post('/api/auth/login', {
+          email: document.getElementById('adminEmail').value.trim(),
+          password: document.getElementById('adminPassword').value
+        });
+        if (data.success) {
+          localStorage.setItem('fg_token', data.token);
+          localStorage.setItem('fg_admin', JSON.stringify(data.admin));
+          window.location.href = '/admin-dashboard.html';
+        } else {
+          throw new Error(data.message || 'Login failed');
+        }
+      } catch (err) {
+        errEl.textContent = '❌ ' + (err.message || 'Invalid credentials. Please try again.');
+        errEl.style.display = 'flex';
+        document.getElementById('loginText').style.display = 'inline';
+        document.getElementById('loginSpinner').hidden = true;
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('togglePwd').addEventListener('click', () => {
+      const inp = document.getElementById('adminPassword');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      document.getElementById('togglePwd').textContent = inp.type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
+</body>
+</html>

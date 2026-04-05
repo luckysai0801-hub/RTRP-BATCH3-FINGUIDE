@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – FIN GUIDE</title>
+  <meta name="description" content="Sign in to your FIN GUIDE account to access personalized recommendations and saved comparisons."/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <!-- Brand -->
+    <div class="auth-brand">
+      <a href="/" class="logo large">FIN<span>GUIDE</span></a>
+      <p>India's Smart Financial Comparison Platform</p>
+    </div>
+
+    <div class="auth-card">
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="window.location.href='/login.html'">Login</button>
+        <button class="auth-tab" id="tabSignup" onclick="window.location.href='/signup.html'">Sign Up</button>
+      </div>
+
+      <div class="alert alert-error" id="errorMsg" hidden></div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group" id="grpEmail">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email"/>
+          <span class="field-error" id="emailError"></span>
+        </div>
+        <div class="form-group" id="grpPassword">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password"/>
+            <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Show password">👁️</button>
+          </div>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn" style="margin-top:4px;">
+          <span id="loginText">Sign In</span>
+          <span id="loginSpinner" class="spinner" hidden></span>
+        </button>
+      </form>
+
+      <div class="auth-divider"><span>or continue as</span></div>
+      <button class="btn btn-secondary btn-full" id="adminLoginBtn">🔒 Admin Login →</button>
+
+      <p class="auth-footer">
+        Don't have an account? <a href="/signup.html">Create one →</a>
+      </p>
+    </div>
+
+    <!-- Social proof -->
+    <div class="social-proof">
+      <strong>12,000+</strong> users compare smarter with FIN GUIDE every month.
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (function() {
+      if (localStorage.getItem('fg_token')) location.href = '/dashboard.html';
+
+      const form = document.getElementById('loginForm');
+      const errorMsg = document.getElementById('errorMsg');
+      const pwdInput = document.getElementById('password');
+      const emailInput = document.getElementById('email');
+
+      // Inline validation
+      emailInput.addEventListener('blur', () => {
+        const ok = /\S+@\S+\.\S+/.test(emailInput.value);
+        document.getElementById('emailError').textContent = ok || !emailInput.value ? '' : 'Enter a valid email address';
+        document.getElementById('grpEmail').className = 'form-group' + (!ok && emailInput.value ? '' : '');
+      });
+
+      document.getElementById('pwdToggle').addEventListener('click', () => {
+        pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+        document.getElementById('pwdToggle').textContent = pwdInput.type === 'password' ? '👁️' : '🙈';
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.hidden = true;
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true;
+        document.getElementById('loginSpinner').hidden = false;
+        document.getElementById('loginText').textContent = 'Signing in…';
+
+        const email = emailInput.value.trim();
+        const password = pwdInput.value;
+
+        try {
+          const data = await FinAPI.post('/api/auth/login', { email, password });
+          if (data.success) {
+            localStorage.setItem('fg_token', data.token);
+            localStorage.setItem('fg_user', JSON.stringify(data.user));
+            location.href = data.user.role === 'admin' ? '/admin-dashboard.html' : '/dashboard.html';
+          } else {
+            throw new Error(data.message || 'Login failed');
+          }
+        } catch (err) {
+          errorMsg.textContent = err.message || 'Invalid email or password';
+          errorMsg.hidden = false;
+          btn.disabled = false;
+          document.getElementById('loginSpinner').hidden = true;
+          document.getElementById('loginText').textContent = 'Sign In';
+        }
+      });
+
+      document.getElementById('adminLoginBtn').addEventListener('click', () => {
+        document.getElementById('email').value = 'admin@finguide.com';
+        document.getElementById('password').value = 'Admin@123';
+        form.dispatchEvent(new Event('submit'));
+      });
+    })();
+  </script>
+</body>
+</html>

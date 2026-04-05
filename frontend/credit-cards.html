@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credit Cards – FIN GUIDE</title>
+  <meta name="description" content="Compare 55+ credit cards from India's top banks. Filter by cashback, travel, fuel, dining, and more."/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/credit-cards.html" class="active">Credit Cards</a></li>
+      <li><a href="/loans.html">Loans</a></li>
+      <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+      <li><a href="/recommendations.html">AI Picks</a></li>
+    </ul>
+    <div class="nav-actions" id="navActions">
+      <a href="/admin-login.html" class="btn btn-secondary btn-sm">Admin Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container">
+    <span class="section-eyebrow">Browse &amp; Compare</span>
+    <h1>💳 Credit Cards</h1>
+    <p>Compare <span id="totalCount">55+</span> credit cards from India's top banks</p>
+  </div>
+</div>
+
+<section style="padding:32px 0 80px;">
+  <div class="container">
+
+    <!-- Pill filter chips -->
+    <div class="filter-chip-row" id="rewardChips">
+      <label>Category:</label>
+      <button class="chip chip-filter active" data-val="" id="chip-all">All</button>
+      <button class="chip chip-filter" data-val="cashback" id="chip-cashback">💰 Cashback</button>
+      <button class="chip chip-filter" data-val="travel" id="chip-travel">✈️ Travel</button>
+      <button class="chip chip-filter" data-val="shopping" id="chip-shopping">🛍️ Shopping</button>
+      <button class="chip chip-filter" data-val="fuel" id="chip-fuel">⛽ Fuel</button>
+      <button class="chip chip-filter" data-val="dining" id="chip-dining">🍽️ Dining</button>
+      <button class="chip chip-filter" data-val="general" id="chip-general">💳 General</button>
+    </div>
+
+    <!-- Filters bar -->
+    <div class="filters-bar">
+      <div>
+        <label>Network</label>
+        <select id="filterNetwork">
+          <option value="">Any Network</option>
+          <option value="Visa">Visa</option>
+          <option value="Mastercard">Mastercard</option>
+          <option value="Rupay">RuPay</option>
+          <option value="Amex">Amex</option>
+        </select>
+      </div>
+      <div>
+        <label>Max Annual Fee (₹)</label>
+        <select id="filterFee">
+          <option value="">Any Fee</option>
+          <option value="0">Free (₹0)</option>
+          <option value="999">Under ₹999</option>
+          <option value="2999">Under ₹2,999</option>
+          <option value="9999">Under ₹9,999</option>
+        </select>
+      </div>
+      <div>
+        <label>Lounge Access</label>
+        <select id="filterLounge">
+          <option value="">Either</option>
+          <option value="true">Yes</option>
+        </select>
+      </div>
+      <div>
+        <label>Search</label>
+        <input type="text" id="searchInput" placeholder="Card or bank name" style="min-width:160px;"/>
+      </div>
+      <button class="btn btn-primary" id="applyFilters">Filter</button>
+      <button class="btn btn-secondary" id="clearFilters">Clear</button>
+    </div>
+
+    <!-- Sort bar -->
+    <div class="sort-bar">
+      <span class="count" id="resultsInfo">Loading cards…</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label style="font-size:.82rem;color:var(--text-muted);">Sort by</label>
+        <select id="sortBy">
+          <option value="rating">Rating</option>
+          <option value="cashback">Cashback %</option>
+          <option value="fee">Annual Fee (Low)</option>
+          <option value="rate">Interest Rate</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="product-grid" id="cardsGrid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Compare sticky drawer (shows when 2+ selected) -->
+<div class="compare-strip" id="compareStrip">
+  <span class="compare-strip-label">Compare:</span>
+  <div class="compare-items" id="compareItems"></div>
+  <div class="compare-strip-actions">
+    <button class="btn btn-primary btn-sm" id="compareNow" disabled>Compare (0/3)</button>
+    <button class="btn btn-secondary btn-sm" id="clearCompare">Clear</button>
+  </div>
+</div>
+
+<!-- Compare Modal -->
+<div class="modal-overlay" id="compareModal">
+  <div class="modal">
+    <h2>📊 Card Comparison</h2>
+    <div id="compareContent" style="overflow-x:auto;"></div>
+    <button class="btn btn-secondary" onclick="document.getElementById('compareModal').classList.remove('open')" style="margin-top:16px;">Close</button>
+  </div>
+</div>
+
+<button class="chat-toggle" id="chatToggle">💬</button>
+<div class="chat-bubble" id="chatBubble" hidden>
+  <div class="chat-header"><span>🤖 FinBot</span><button id="chatClose">&times;</button></div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">Ask me about credit cards!</div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="e.g. Best travel card?"/>
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="/" class="logo">FIN<span>GUIDE</span></a>
+        <p>India's smart financial comparison platform.</p>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/credit-cards.html">Credit Cards</a></li>
+          <li><a href="/loans.html">Loans</a></li>
+          <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="/recommendations.html">AI Picks</a></li>
+          <li><a href="/loans.html#emi-calculator">EMI Calculator</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <ul><li><a href="/login.html">Login</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 FIN GUIDE. Data for informational purposes.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  FinAPI.renderNav('navActions');
+
+  // Hamburger
+  document.getElementById('hamburger').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+
+  // Reward chip state
+  let activeRewardType = '';
+  document.querySelectorAll('#rewardChips .chip-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#rewardChips .chip-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeRewardType = btn.dataset.val;
+      loadCards();
+    });
+  });
+
+  const compareSet = [];
+  let allCards = [];
+
+  async function loadCards() {
+    const fee = document.getElementById('filterFee').value;
+    const lounge = document.getElementById('filterLounge').value;
+    const network = document.getElementById('filterNetwork').value;
+    const sort = document.getElementById('sortBy').value;
+    const search = document.getElementById('searchInput').value;
+
+    const params = new URLSearchParams({ sort, limit: 80 });
+    if (activeRewardType) params.set('rewards_type', activeRewardType);
+    if (fee !== '') params.set('max_fee', fee);
+    if (lounge) params.set('lounge_access', lounge);
+    if (network) params.set('network', network);
+    if (search) params.set('search', search);
+
+    document.getElementById('cardsGrid').innerHTML = '<div class="skeleton-card"></div>'.repeat(6);
+    const data = await FinAPI.get(`/api/credit-cards?${params}`);
+
+    if (!data.success) { document.getElementById('cardsGrid').innerHTML = '<p style="color:var(--text-muted);padding:32px;text-align:center;">Failed to load cards.</p>'; return; }
+    allCards = data.data;
+    document.getElementById('resultsInfo').textContent = `Showing ${allCards.length} credit cards`;
+    document.getElementById('totalCount').textContent = allCards.length;
+    renderCards(allCards);
+  }
+
+  function renderCards(cards) {
+    const g = document.getElementById('cardsGrid');
+    if (!cards.length) {
+      g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
+        <p>No cards match your filters.</p>
+        <button class="btn btn-secondary" style="margin-top:12px;" onclick="clearFilters()">Clear Filters</button>
+      </div>`;
+      return;
+    }
+    g.innerHTML = cards.map((c, i) => {
+      const bankName = c.bank_name || c.bank?.name || '';
+      const inCompare = compareSet.includes(c.id);
+      const isFeatured = i < 3;
+      const bestLabels = ['Best Overall', 'Best Value', 'Best Rewards'];
+      return `
+  <div class="product-card" id="card-${c.id}">
+    ${isFeatured ? `<div class="best-badge">${bestLabels[i]}</div>` : ''}
+    <div class="product-card-top" style="margin-top:${isFeatured ? '16px' : '0'}">
+      <span class="badge badge-${c.rewards_type}">${c.rewards_type?.toUpperCase()}</span>
+      ${c.lounge_access ? '<span class="chip chip-blue" style="font-size:.68rem;">🛋️ Lounge</span>' : ''}
+    </div>
+    <h3 style="margin-top:10px;">${c.card_name}</h3>
+    <p class="bank-name">${bankName}</p>
+    <div class="product-meta">
+      <span>Annual Fee: <strong>₹${(c.annual_fee||0).toLocaleString('en-IN')}</strong></span>
+      <span>Interest: <strong>${c.interest_rate}% p.a.</strong></span>
+      ${c.cashback > 0 ? `<span>Cashback: <strong>${c.cashback}%</strong></span>` : ''}
+      <span>Min Income: <strong>₹${(c.min_income||0).toLocaleString('en-IN')}/mo</strong></span>
+      <span>Rating: <strong>⭐ ${c.rating}/5</strong></span>
+    </div>
+    <div style="margin-bottom:12px;">
+      ${(c.features||[]).slice(0,2).map(f => `<div style="font-size:.78rem;color:var(--text-muted);padding:2px 0;">• ${f}</div>`).join('')}
+    </div>
+    <div class="product-card-actions">
+      <a href="${c.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply Now</a>
+      <button onclick="toggleCompare(${c.id},'${c.card_name.replace(/'/g,"\\'")}',this)" class="btn btn-secondary btn-sm ${inCompare ? 'active' : ''}" id="cmp-${c.id}">
+        ${inCompare ? '✓ Added' : '+ Compare'}
+      </button>
+    </div>
+  </div>`;
+    }).join('');
+  }
+
+  function toggleCompare(id, name) {
+    const idx = compareSet.indexOf(id);
+    if (idx > -1) {
+      compareSet.splice(idx, 1);
+    } else {
+      if (compareSet.length >= 3) { FinAPI.toast('Max 3 cards to compare', 'error'); return; }
+      compareSet.push(id);
+    }
+    updateCompareStrip();
+    const btn = document.getElementById(`cmp-${id}`);
+    if (btn) btn.textContent = compareSet.includes(id) ? '✓ Added' : '+ Compare';
+  }
+
+  function updateCompareStrip() {
+    const strip = document.getElementById('compareStrip');
+    const items = document.getElementById('compareItems');
+    const nowBtn = document.getElementById('compareNow');
+    const n = compareSet.length;
+    strip.className = `compare-strip${n > 0 ? ' visible' : ''}`;
+    items.innerHTML = compareSet.map(cid => {
+      const c = allCards.find(x => x.id === cid || String(x.id) === String(cid));
+      return `<span class="compare-item">${c?.card_name || cid}<button onclick="toggleCompare(${cid},'')">×</button></span>`;
+    }).join('');
+    nowBtn.textContent = `Compare (${n}/3)`;
+    nowBtn.disabled = n < 2;
+  }
+
+  document.getElementById('compareNow').addEventListener('click', () => {
+    const chosen = allCards.filter(c => compareSet.includes(c.id));
+    if (chosen.length < 2) return;
+    const fields = [['Annual Fee','annual_fee','₹'],['Joining Fee','joining_fee','₹'],['Interest Rate','interest_rate','% p.a.'],['Cashback','cashback','%'],['Min Income','min_income','₹'],['Rating','rating','⭐'],['Network','network',''],['Lounge','lounge_access','']];
+    const table = `<table class="data-table" style="min-width:400px;">
+  <thead><tr><th>Feature</th>${chosen.map(c => `<th>${c.card_name}<br><small style="font-weight:400;">${c.bank_name||c.bank?.name||''}</small></th>`).join('')}</tr></thead>
+  <tbody>${fields.map(([label,key,unit]) => `<tr><td><strong>${label}</strong></td>${chosen.map(c => {
+    let v = c[key];
+    if (key === 'lounge_access') v = v ? '✅ Yes' : '❌ No';
+    else if (['annual_fee','joining_fee','min_income'].includes(key)) v = '₹'+(v||0).toLocaleString('en-IN');
+    else v = v+unit;
+    return `<td>${v}</td>`;
+  }).join('')}</tr>`).join('')}</tbody></table>`;
+    document.getElementById('compareContent').innerHTML = table;
+    document.getElementById('compareModal').classList.add('open');
+  });
+
+  document.getElementById('clearCompare').addEventListener('click', () => {
+    compareSet.length = 0;
+    document.getElementById('compareStrip').className = 'compare-strip';
+    renderCards(allCards);
+  });
+
+  document.getElementById('applyFilters').addEventListener('click', loadCards);
+  document.getElementById('sortBy').addEventListener('change', loadCards);
+  function clearFilters() {
+    ['filterNetwork','filterFee','filterLounge','sortBy'].forEach(id => {
+      const el = document.getElementById(id); if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    });
+    document.getElementById('searchInput').value = '';
+    activeRewardType = '';
+    document.querySelectorAll('#rewardChips .chip-filter').forEach(b => b.classList.remove('active'));
+    document.querySelector('#rewardChips .chip-filter[data-val=""]').classList.add('active');
+    loadCards();
+  }
+  document.getElementById('clearFilters').addEventListener('click', clearFilters);
+  document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadCards(); });
+
+  // URL params
+  const urlParams = new URLSearchParams(location.search);
+  if (urlParams.get('rewards_type')) {
+    activeRewardType = urlParams.get('rewards_type');
+    document.querySelectorAll('#rewardChips .chip-filter').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === activeRewardType);
+    });
+  }
+  if (urlParams.get('max_fee') === '0') document.getElementById('filterFee').value = '0';
+  loadCards();
+</script>
+</body>
+</html>

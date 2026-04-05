@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – FIN GUIDE</title>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<!-- Admin-specific nav — no public nav links -->
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+    <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--danger);background:var(--danger-lt);padding:3px 10px;border-radius:var(--radius-badge);">🔒 Admin Panel</span>
+    <div class="nav-actions" style="margin-left:auto;">
+      <a href="/" class="btn btn-secondary btn-sm">← Public Site</a>
+      <button onclick="logout()" class="btn btn-primary btn-sm" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- Sidebar nav with icon + label + active state -->
+  <aside class="sidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-role-badge">Administrator</div>
+      <div class="admin-name" id="adminName">Admin</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" onclick="showTab('overview');return false;" class="active" id="nav-overview">
+        <span class="icon">📊</span> Dashboard
+      </a>
+      <a href="#" onclick="showTab('cards');return false;" id="nav-cards">
+        <span class="icon">💳</span> Credit Cards
+      </a>
+      <a href="#" onclick="showTab('loans');return false;" id="nav-loans">
+        <span class="icon">🏠</span> Loans
+      </a>
+      <a href="#" onclick="showTab('fds');return false;" id="nav-fds">
+        <span class="icon">📈</span> Fixed Deposits
+      </a>
+      <a href="#" onclick="showTab('users');return false;" id="nav-users">
+        <span class="icon">👥</span> Users
+      </a>
+      <a href="#" onclick="showTab('banks');return false;" id="nav-banks">
+        <span class="icon">🏦</span> Banks
+      </a>
+    </nav>
+  </aside>
+
+  <main class="dash-content" id="dashContent">
+
+    <!-- ── Overview Tab ── -->
+    <div id="tab-overview">
+      <!-- Top metric header row -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <div>
+          <span class="section-eyebrow">Admin</span>
+          <h1 style="font-size:1.5rem;">Dashboard Overview</h1>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="refreshRates">🔄 Refresh Rates</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="sCC">—</div>
+          <div class="stat-label">Credit Cards</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="sLoans">—</div>
+          <div class="stat-label">Loans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="sFDs">—</div>
+          <div class="stat-label">FD Schemes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="sUsers">—</div>
+          <div class="stat-label">Users</div>
+        </div>
+      </div>
+
+      <div style="background:white;border:var(--card-border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-card);margin-top:8px;">
+        <h3 style="margin-bottom:12px;font-size:0.95rem;">Quick Links</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="/credit-cards.html" class="btn btn-secondary btn-sm">View Cards (public)</a>
+          <a href="/loans.html" class="btn btn-secondary btn-sm">View Loans</a>
+          <a href="/fixed-deposits.html" class="btn btn-secondary btn-sm">View FDs</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Cards Tab ── -->
+    <div id="tab-cards" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h1 style="font-size:1.4rem;">Credit Cards</h1>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal('card')" id="addCardBtn">+ Add Card</button>
+      </div>
+      <div id="cardsTable">
+        <div class="empty-state"><div class="empty-state-icon">💳</div><p>Loading data…</p></div>
+      </div>
+    </div>
+
+    <!-- ── Loans Tab ── -->
+    <div id="tab-loans" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h1 style="font-size:1.4rem;">Loans</h1>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal('loan')" id="addLoanBtn">+ Add Loan</button>
+      </div>
+      <div id="loansTable">
+        <div class="empty-state"><div class="empty-state-icon">🏠</div><p>Loading data…</p></div>
+      </div>
+    </div>
+
+    <!-- ── FDs Tab ── -->
+    <div id="tab-fds" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h1 style="font-size:1.4rem;">Fixed Deposits</h1>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal('fd')" id="addFDBtn">+ Add FD</button>
+      </div>
+      <div id="fdsTable">
+        <div class="empty-state"><div class="empty-state-icon">📈</div><p>Loading data…</p></div>
+      </div>
+    </div>
+
+    <!-- ── Users Tab ── -->
+    <div id="tab-users" hidden>
+      <h1 style="font-size:1.4rem;margin-bottom:20px;">Users</h1>
+      <div id="usersTable">
+        <div class="empty-state"><div class="empty-state-icon">👥</div><p>Loading data…</p></div>
+      </div>
+    </div>
+
+    <!-- ── Banks Tab ── -->
+    <div id="tab-banks" hidden>
+      <h1 style="font-size:1.4rem;margin-bottom:20px;">Banks</h1>
+      <div id="banksTable">
+        <div class="empty-state"><div class="empty-state-icon">🏦</div><p>Loading data…</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h2 id="modalTitle">Add Product</h2>
+    <form id="productForm">
+      <div id="modalFields"></div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  // Auth guard — admin only
+  const token = FinAPI.getToken();
+  const user = FinAPI.getAdmin();
+  if (!token || !user || user.role !== 'admin') location.href = '/admin-login.html';
+  document.getElementById('adminName').textContent = user?.name || 'Admin';
+
+  // Load dashboard stats
+  FinAPI.get('/api/admin/dashboard').then(d => {
+    if (!d.success) return;
+    const s = d.data;
+    document.getElementById('sCC').textContent = s.credit_cards || '—';
+    document.getElementById('sLoans').textContent = s.loans || '—';
+    document.getElementById('sFDs').textContent = s.fixed_deposits || '—';
+    document.getElementById('sUsers').textContent = s.users || '—';
+  });
+
+  document.getElementById('refreshRates').addEventListener('click', async () => {
+    const data = await FinAPI.post('/api/admin/update-rates', {});
+    FinAPI.toast(data.message || 'Done', data.success ? 'success' : 'error');
+  });
+
+  async function showTab(name) {
+    ['overview','cards','loans','fds','users','banks'].forEach(t => {
+      document.getElementById(`tab-${t}`).hidden = t !== name;
+      const nav = document.getElementById(`nav-${t}`);
+      if (nav) nav.classList.toggle('active', t === name);
+    });
+    if (name === 'cards' && document.getElementById('cardsTable').querySelector('.empty-state')) loadAdminCards();
+    if (name === 'loans' && document.getElementById('loansTable').querySelector('.empty-state')) loadAdminLoans();
+    if (name === 'fds' && document.getElementById('fdsTable').querySelector('.empty-state')) loadAdminFDs();
+    if (name === 'users' && document.getElementById('usersTable').querySelector('.empty-state')) loadAdminUsers();
+    if (name === 'banks' && document.getElementById('banksTable').querySelector('.empty-state')) loadAdminBanks();
+  }
+
+  async function loadAdminCards() {
+    const d = await FinAPI.get('/api/credit-cards?limit=80&sort=rating');
+    document.getElementById('cardsTable').innerHTML = renderTable(d.data, ['card_name','bank_name','rewards_type','annual_fee','interest_rate','rating','is_active'], 'credit-cards');
+  }
+  async function loadAdminLoans() {
+    const d = await FinAPI.get('/api/loans?limit=60');
+    document.getElementById('loansTable').innerHTML = renderTable(d.data, ['loan_name','bank_name','loan_type','interest_rate','processing_fee','rating'], 'loans');
+  }
+  async function loadAdminFDs() {
+    const d = await FinAPI.get('/api/fds?limit=40');
+    document.getElementById('fdsTable').innerHTML = renderTable(d.data, ['scheme_name','bank_name','interest_rate','senior_citizen_rate','compounding_frequency','rating'], 'fds');
+  }
+  async function loadAdminUsers() {
+    const d = await FinAPI.get('/api/admin/users');
+    if (!d.success) {
+      document.getElementById('usersTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No database connected — user data unavailable.</p></div>';
+      return;
+    }
+    document.getElementById('usersTable').innerHTML = renderTable(d.data||[], ['name','email','role','monthly_salary','spending_profile','risk_appetite'], 'users');
+  }
+  async function loadAdminBanks() {
+    const d = await FinAPI.get('/api/banks');
+    document.getElementById('banksTable').innerHTML = renderTable(d.data, ['name','bank_type','established','headquarters','website'], 'banks');
+  }
+
+  const headMap = {
+    card_name:'Card Name', bank_name:'Bank', loan_name:'Loan Name', scheme_name:'Scheme',
+    name:'Name', email:'Email', rewards_type:'Type', annual_fee:'Annual Fee',
+    interest_rate:'Rate %', senior_citizen_rate:'Sr. Rate', cashback:'Cashback',
+    rating:'Rating', is_active:'Active', loan_type:'Type', processing_fee:'Proc. Fee',
+    compounding_frequency:'Compounding', role:'Role', monthly_salary:'Income',
+    spending_profile:'Spending', risk_appetite:'Risk', established:'Est.',
+    headquarters:'HQ', website:'Website', bank_type:'Bank Type'
+  };
+
+  function renderTable(rows, cols, resource) {
+    if (!rows || !rows.length) return '<div class="empty-state"><p>No data found.</p></div>';
+    return `
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead><tr>${cols.map(c => `<th>${headMap[c]||c}</th>`).join('')}<th>Actions</th></tr></thead>
+      <tbody>${rows.map(r => `
+        <tr>
+          ${cols.map(c => {
+            let val = r[c] != null ? r[c] : '-';
+            if (c === 'is_active') val = val === true || val === 1
+              ? '<span class="status-badge status-active">Active</span>'
+              : '<span class="status-badge status-archived">Inactive</span>';
+            if (c === 'role') val = `<span class="badge badge-${val==='admin'?'danger':'general'}">${val}</span>`;
+            return `<td>${val}</td>`;
+          }).join('')}
+          <td>
+            <div class="row-actions">
+              ${['credit-cards', 'loans', 'fds'].includes(resource) ? `<button class="btn btn-primary btn-sm" onclick="openAddModal('${resource === 'credit-cards' ? 'card' : resource === 'loans' ? 'loan' : 'fd'}', ${JSON.stringify(r).replace(/"/g, '&quot;')})">Edit</button>` : ''}
+              <button class="btn btn-secondary btn-sm" onclick="deleteItem('${resource}',${r.id})">Delete</button>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+  }
+
+  async function deleteItem(resource, id) {
+    if (!confirm(`Delete item #${id} from ${resource}?`)) return;
+    const d = await FinAPI.del(`/api/${resource}/${id}`);
+    FinAPI.toast(d.message||(d.success?'Deleted':'Failed'), d.success?'success':'error');
+    if (d.success) location.reload();
+  }
+
+  let currentModalType = '';
+  let currentEditId = null;
+
+  function openAddModal(type, rowData = null) {
+    currentModalType = type;
+    currentEditId = rowData ? rowData.id : null;
+
+    let titleText = type === 'card' ? 'Credit Card' : type === 'loan' ? 'Loan' : 'Fixed Deposit';
+    document.getElementById('modalTitle').textContent = `${rowData ? 'Edit' : 'Add'} ${titleText}`;
+    
+    let modalFields = document.getElementById('modalFields');
+    let html = '';
+
+    const getValue = (key, defaultVal = '') => {
+      if (rowData && rowData[key] !== undefined && rowData[key] !== null) {
+        return rowData[key];
+      }
+      return defaultVal;
+    };
+
+    if (type === 'card') {
+      html += `
+        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Card Name</label><input type="text" name="card_name" class="form-control" value="${getValue('card_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Rewards Type</label>
+          <select name="rewards_type" class="form-control" required>
+            <option value="Cashback" ${getValue('rewards_type') === 'Cashback' ? 'selected' : ''}>Cashback</option>
+            <option value="Travel" ${getValue('rewards_type') === 'Travel' ? 'selected' : ''}>Travel</option>
+            <option value="Fuel" ${getValue('rewards_type') === 'Fuel' ? 'selected' : ''}>Fuel</option>
+            <option value="Shopping" ${getValue('rewards_type') === 'Shopping' ? 'selected' : ''}>Shopping</option>
+            <option value="Lifestyle" ${getValue('rewards_type') === 'Lifestyle' ? 'selected' : ''}>Lifestyle</option>
+          </select>
+        </div>
+        <div style="margin-bottom:15px"><label class="form-label">Annual Fee</label><input type="number" name="annual_fee" class="form-control" value="${getValue('annual_fee')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Interest Rate %</label><input type="number" step="0.01" name="interest_rate" class="form-control" value="${getValue('interest_rate')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Credit Limit Min</label><input type="number" name="credit_limit_min" class="form-control" value="${getValue('credit_limit_min')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Credit Limit Max</label><input type="number" name="credit_limit_max" class="form-control" value="${getValue('credit_limit_max')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Joining Fee</label><input type="number" name="joining_fee" class="form-control" value="${getValue('joining_fee')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
+        <div style="margin-bottom:15px"><label><input type="checkbox" name="is_active" ${!rowData || getValue('is_active', true) === true || getValue('is_active') === 1 ? 'checked' : ''}> Is Active</label></div>
+      `;
+    } else if (type === 'loan') {
+      html += `
+        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Loan Name</label><input type="text" name="loan_name" class="form-control" value="${getValue('loan_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Loan Type</label>
+          <select name="loan_type" class="form-control" required>
+            <option value="Personal" ${getValue('loan_type') === 'Personal' ? 'selected' : ''}>Personal</option>
+            <option value="Home" ${getValue('loan_type') === 'Home' ? 'selected' : ''}>Home</option>
+            <option value="Car" ${getValue('loan_type') === 'Car' ? 'selected' : ''}>Car</option>
+            <option value="Education" ${getValue('loan_type') === 'Education' ? 'selected' : ''}>Education</option>
+            <option value="Business" ${getValue('loan_type') === 'Business' ? 'selected' : ''}>Business</option>
+          </select>
+        </div>
+        <div style="margin-bottom:15px"><label class="form-label">Interest Rate Min %</label><input type="number" step="0.01" name="interest_rate_min" class="form-control" value="${getValue('interest_rate_min')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Interest Rate Max %</label><input type="number" step="0.01" name="interest_rate_max" class="form-control" value="${getValue('interest_rate_max')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Processing Fee %</label><input type="number" step="0.01" name="processing_fee" class="form-control" value="${getValue('processing_fee')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Min Amount</label><input type="number" name="min_amount" class="form-control" value="${getValue('min_amount')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Max Amount</label><input type="number" name="max_amount" class="form-control" value="${getValue('max_amount')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Min Tenure Months</label><input type="number" name="min_tenure_months" class="form-control" value="${getValue('min_tenure_months')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Max Tenure Months</label><input type="number" name="max_tenure_months" class="form-control" value="${getValue('max_tenure_months')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
+      `;
+    } else if (type === 'fd') {
+      html += `
+        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Scheme Name</label><input type="text" name="scheme_name" class="form-control" value="${getValue('scheme_name')}" required></div>
+        <div style="margin-bottom:15px"><label class="form-label">Interest Rate %</label><input type="number" step="0.01" name="interest_rate" class="form-control" value="${getValue('interest_rate')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Senior Citizen Rate %</label><input type="number" step="0.01" name="senior_citizen_rate" class="form-control" value="${getValue('senior_citizen_rate')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Min Deposit</label><input type="number" name="min_deposit" class="form-control" value="${getValue('min_deposit')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Max Deposit</label><input type="number" name="max_deposit" class="form-control" value="${getValue('max_deposit')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Min Tenure Days</label><input type="number" name="min_tenure_days" class="form-control" value="${getValue('min_tenure_days')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Max Tenure Days</label><input type="number" name="max_tenure_days" class="form-control" value="${getValue('max_tenure_days')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Compounding Frequency</label>
+          <select name="compounding_frequency" class="form-control" required>
+            <option value="Monthly" ${getValue('compounding_frequency') === 'Monthly' ? 'selected' : ''}>Monthly</option>
+            <option value="Quarterly" ${getValue('compounding_frequency') === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
+            <option value="Half-Yearly" ${getValue('compounding_frequency') === 'Half-Yearly' ? 'selected' : ''}>Half-Yearly</option>
+            <option value="Yearly" ${getValue('compounding_frequency') === 'Yearly' ? 'selected' : ''}>Yearly</option>
+          </select>
+        </div>
+        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
+        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
+      `;
+    }
+
+    modalFields.innerHTML = html;
+    document.getElementById('addModal').classList.add('open');
+  }
+
+  document.getElementById('productForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const body = {};
+    for (let [key, value] of formData.entries()) {
+      body[key] = value;
+    }
+    
+    if (currentModalType === 'card') {
+      body.is_active = formData.has('is_active');
+    }
+
+    let url = '';
+    if (currentModalType === 'card') url = '/api/credit-cards';
+    else if (currentModalType === 'loan') url = '/api/loans';
+    else if (currentModalType === 'fd') url = '/api/fds';
+
+    if (currentEditId) {
+      url += `/${currentEditId}`;
+    }
+
+    try {
+      const res = currentEditId ? await FinAPI.put(url, body) : await FinAPI.post(url, body);
+      if (res && res.success) {
+        FinAPI.toast('Saved successfully', 'success');
+        document.getElementById('addModal').classList.remove('open');
+        document.getElementById('productForm').reset();
+        if (currentModalType === 'card') loadAdminCards();
+        else if (currentModalType === 'loan') loadAdminLoans();
+        else if (currentModalType === 'fd') loadAdminFDs();
+      } else {
+        FinAPI.toast('Failed to save', 'error');
+      }
+    } catch (err) {
+      FinAPI.toast('Failed to save', 'error');
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem('fg_token');
+    localStorage.removeItem('fg_admin');
+    location.href = '/admin-login.html';
+  }
+</script>
+</body>
+</html>

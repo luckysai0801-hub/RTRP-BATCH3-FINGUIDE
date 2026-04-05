@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up – FIN GUIDE</title>
+  <meta name="description" content="Create your free FIN GUIDE account and get personalized financial recommendations in 30 seconds."/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body class="auth-page">
+
+  <div class="auth-container wide">
+    <div class="auth-brand">
+      <a href="/" class="logo large">FIN<span>GUIDE</span></a>
+      <p>Create your free account in 30 seconds</p>
+    </div>
+
+    <div class="auth-card">
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab" onclick="window.location.href='/login.html'" id="tabLogin">Login</button>
+        <button class="auth-tab active" id="tabSignup">Sign Up</button>
+      </div>
+
+      <div class="alert alert-error" id="errorMsg" hidden></div>
+      <div class="alert alert-success" id="successMsg" hidden></div>
+
+      <form id="signupForm" novalidate>
+        <div class="form-row">
+          <div class="form-group" id="grpName">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" placeholder="Rahul Sharma" required/>
+            <span class="field-error-msg" id="nameHint"></span>
+          </div>
+          <div class="form-group" id="grpEmail">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" placeholder="rahul@example.com" required autocomplete="email"/>
+            <span class="field-error-msg" id="emailHint"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="grpPassword">
+            <label for="password">Password *</label>
+            <div class="password-wrap">
+              <input type="password" id="password" placeholder="Min 6 characters" required/>
+              <button type="button" class="pwd-toggle" id="pwdToggle">👁️</button>
+            </div>
+            <span class="field-error-msg" id="passwordHint"></span>
+          </div>
+          <div class="form-group" id="grpConfirm">
+            <label for="confirmPassword">Confirm Password *</label>
+            <input type="password" id="confirmPassword" placeholder="Repeat password" required/>
+            <span class="field-error-msg" id="confirmHint"></span>
+          </div>
+        </div>
+
+        <div class="form-section-title">📊 Personalize your recommendations (optional)</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="monthly_salary">Monthly Income (₹)</label>
+            <input type="number" id="monthly_salary" placeholder="e.g. 50000" min="0"/>
+          </div>
+          <div class="form-group">
+            <label for="spending_profile">Primary Spending</label>
+            <select id="spending_profile">
+              <option value="">Select category</option>
+              <option value="travel">Travel ✈️</option>
+              <option value="shopping">Shopping 🛍️</option>
+              <option value="dining">Dining 🍽️</option>
+              <option value="fuel">Fuel ⛽</option>
+              <option value="general">General 💳</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Investment Risk Appetite</label>
+          <div class="radio-group">
+            <label class="radio-opt"><input type="radio" name="risk_appetite" value="low" checked/> 🟢 Low (PSU banks FDs)</label>
+            <label class="radio-opt"><input type="radio" name="risk_appetite" value="medium"/> 🟡 Medium (Private banks)</label>
+            <label class="radio-opt"><input type="radio" name="risk_appetite" value="high"/> 🔴 High (NBFCs, higher rates)</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="signupBtn" style="margin-top:8px;">
+          <span id="signupText">Create Account</span>
+          <span id="signupSpinner" class="spinner" hidden></span>
+        </button>
+      </form>
+
+      <p class="auth-footer">Already have an account? <a href="/login.html">Sign in →</a></p>
+    </div>
+
+    <div class="social-proof">
+      Join <strong>12,000+</strong> users who compare smarter with FIN GUIDE.
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (function() {
+      if (localStorage.getItem('fg_token')) location.href = '/dashboard.html';
+
+      const pwdInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirmPassword');
+
+      document.getElementById('pwdToggle').addEventListener('click', () => {
+        pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
+      });
+
+      // Inline validation
+      function setHint(id, msg, isOk) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = isOk ? 'field-hint-ok' : 'field-error-msg';
+      }
+
+      document.getElementById('name').addEventListener('blur', () => {
+        const v = document.getElementById('name').value.trim();
+        if (!v) setHint('nameHint','Name is required',false);
+        else if (v.length < 2) setHint('nameHint','Name too short',false);
+        else setHint('nameHint','✓ Looks good',true);
+      });
+
+      document.getElementById('email').addEventListener('blur', () => {
+        const v = document.getElementById('email').value.trim();
+        if (/\S+@\S+\.\S+/.test(v)) setHint('emailHint','✓ Valid email',true);
+        else setHint('emailHint','Enter a valid email',false);
+      });
+
+      pwdInput.addEventListener('blur', () => {
+        const v = pwdInput.value;
+        if (v.length >= 6) setHint('passwordHint','✓ Strong enough',true);
+        else setHint('passwordHint','Minimum 6 characters',false);
+      });
+
+      confirmInput.addEventListener('blur', () => {
+        if (confirmInput.value === pwdInput.value && pwdInput.value)
+          setHint('confirmHint','✓ Passwords match',true);
+        else setHint('confirmHint','Passwords do not match',false);
+      });
+
+      document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        errorMsg.hidden = successMsg.hidden = true;
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = pwdInput.value;
+        const confirmPassword = confirmInput.value;
+        const monthly_salary = document.getElementById('monthly_salary').value;
+        const spending_profile = document.getElementById('spending_profile').value;
+        const risk_appetite = document.querySelector('input[name="risk_appetite"]:checked').value;
+
+        function showError(msg) { errorMsg.textContent = msg; errorMsg.hidden = false; }
+
+        if (!name || name.length < 2) return showError('Please enter your full name');
+        if (!email) return showError('Please enter your email address');
+        if (password.length < 6) return showError('Password must be at least 6 characters');
+        if (password !== confirmPassword) return showError('Passwords do not match');
+
+        const btn = document.getElementById('signupBtn');
+        btn.disabled = true;
+        document.getElementById('signupSpinner').hidden = false;
+        document.getElementById('signupText').textContent = 'Creating account…';
+
+        try {
+          const data = await FinAPI.post('/api/auth/signup', {
+            name, email, password,
+            monthly_salary: monthly_salary ? parseInt(monthly_salary) : null,
+            spending_profile: spending_profile || null,
+            risk_appetite,
+          });
+          if (data.success) {
+            localStorage.setItem('fg_token', data.token);
+            localStorage.setItem('fg_user', JSON.stringify(data.user));
+            successMsg.textContent = '🎉 Account created! Redirecting to your dashboard…';
+            successMsg.hidden = false;
+            setTimeout(() => location.href = '/dashboard.html', 1500);
+          } else {
+            throw new Error(data.message || data.errors?.[0]?.message || 'Signup failed');
+          }
+        } catch (err) {
+          showError(err.message);
+          btn.disabled = false;
+          document.getElementById('signupSpinner').hidden = true;
+          document.getElementById('signupText').textContent = 'Create Account';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

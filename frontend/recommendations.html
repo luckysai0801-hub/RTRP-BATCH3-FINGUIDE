@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Recommendations – FIN GUIDE</title>
+  <meta name="description" content="Get personalized credit card, loan, and FD recommendations based on your income and spending habits."/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/credit-cards.html">Credit Cards</a></li>
+      <li><a href="/loans.html">Loans</a></li>
+      <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+      <li><a href="/recommendations.html" class="active">AI Picks</a></li>
+    </ul>
+    <div class="nav-actions" id="navActions">
+      <a href="/admin-login.html" class="btn btn-secondary btn-sm">Admin Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <span class="section-eyebrow">Powered by AI</span>
+    <h1>🤖 Personalized Recommendations</h1>
+    <p>Tell us about yourself and get curated choices in seconds — no sign-up needed!</p>
+  </div>
+</div>
+
+<section style="padding:32px 0 80px;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:32px;align-items:start;">
+
+      <!-- 3-step preference stepper -->
+      <div style="background:white;border:var(--card-border);border-radius:var(--radius);padding:28px;position:sticky;top:calc(var(--nav-h)+16px);box-shadow:var(--shadow-card);">
+
+        <!-- Steps indicator -->
+        <div style="display:flex;align-items:flex-start;gap:0;margin-bottom:28px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div class="step-dot active" id="s1dot">1</div>
+            <div class="step-label">Spending</div>
+          </div>
+          <div class="step-line done" id="line12" style="margin-top:13px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div class="step-dot" id="s2dot">2</div>
+            <div class="step-label">Income</div>
+          </div>
+          <div class="step-line" id="line23" style="margin-top:13px;"></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div class="step-dot" id="s3dot">3</div>
+            <div class="step-label">Goal</div>
+          </div>
+        </div>
+
+        <!-- Step 1: Spend category -->
+        <div id="stepPanel1">
+          <h3 style="margin-bottom:4px;font-size:1rem;">🛍️ Primary Spending Category</h3>
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px;">What do you spend most on?</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="spendingPills">
+            <button class="chip chip-filter" data-val="" onclick="selectSpend(this)">Auto-detect</button>
+            <button class="chip chip-filter" data-val="travel" onclick="selectSpend(this)">✈️ Travel</button>
+            <button class="chip chip-filter" data-val="shopping" onclick="selectSpend(this)">🛍️ Shopping</button>
+            <button class="chip chip-filter" data-val="dining" onclick="selectSpend(this)">🍽️ Dining</button>
+            <button class="chip chip-filter" data-val="fuel" onclick="selectSpend(this)">⛽ Fuel</button>
+            <button class="chip chip-filter" data-val="general" onclick="selectSpend(this)">💳 General</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Income -->
+        <div id="stepPanel2">
+          <h3 style="margin-bottom:4px;font-size:1rem;">💰 Monthly Income (₹)</h3>
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px;">Helps match the right card &amp; loan products</p>
+          <div class="form-group" style="margin-bottom:16px;">
+            <input type="number" id="salary" placeholder="e.g. 50000" min="0" step="5000"/>
+          </div>
+          <div class="form-group">
+            <label>📊 Risk Appetite</label>
+            <select id="risk">
+              <option value="low">Low – PSU banks (safer)</option>
+              <option value="medium" selected>Medium – Private banks</option>
+              <option value="high">High – NBFC/small finance</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 3: Goal -->
+        <div id="stepPanel3">
+          <h3 style="margin-bottom:4px;font-size:1rem;">🏠 Looking for a Loan?</h3>
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px;">Optional — leave blank if not looking</p>
+          <div class="form-group">
+            <select id="loanType">
+              <option value="">No loan needed</option>
+              <option value="personal">Personal Loan</option>
+              <option value="home">Home Loan</option>
+              <option value="car">Car Loan</option>
+              <option value="education">Education Loan</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="getRecommendations" style="margin-top:8px;">
+          <span id="recText">🔍 Get My Picks</span>
+          <span id="recSpinner" class="spinner" hidden></span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div id="recommendationResults">
+        <div class="empty-state">
+          <div class="empty-state-icon">🎯</div>
+          <h3>Fill your profile on the left</h3>
+          <p>Click "Get My Picks" and we'll instantly show you the best products for your lifestyle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button class="chat-toggle" id="chatToggle">💬</button>
+<div class="chat-bubble" id="chatBubble" hidden>
+  <div class="chat-header"><span>🤖 FinBot</span><button id="chatClose">&times;</button></div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">Need help with recommendations?</div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="Ask anything…"/>
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="/" class="logo">FIN<span>GUIDE</span></a>
+        <p>India's smart financial comparison platform.</p>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/credit-cards.html">Credit Cards</a></li>
+          <li><a href="/loans.html">Loans</a></li>
+          <li><a href="/fixed-deposits.html">Fixed Deposits</a></li>
+        </ul>
+      </div>
+      <div><h4>Tools</h4><ul><li><a href="/recommendations.html">AI Picks</a></li></ul></div>
+      <div><h4>Account</h4><ul><li><a href="/login.html">Login</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 FIN GUIDE. Data for informational purposes.</p></div>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/chat.js"></script>
+<script>
+  FinAPI.renderNav('navActions');
+  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+
+  let selectedSpend = '';
+  let currentStep = 1;
+
+  function selectSpend(btn) {
+    document.querySelectorAll('#spendingPills .chip-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedSpend = btn.dataset.val;
+  }
+
+  // Animate stepper on scroll / time
+  setTimeout(() => {
+    document.getElementById('s2dot').classList.add('active');
+    document.getElementById('s3dot').classList.add('active');
+    document.getElementById('line12').classList.add('done');
+    document.getElementById('line23').classList.add('done');
+  }, 500);
+
+  document.getElementById('getRecommendations').addEventListener('click', async () => {
+    const salary = document.getElementById('salary').value;
+    const risk = document.getElementById('risk').value;
+    const loanTypeVal = document.getElementById('loanType').value;
+
+    const btn = document.getElementById('getRecommendations');
+    btn.disabled = true;
+    document.getElementById('recSpinner').hidden = false;
+    document.getElementById('recText').textContent = 'Finding picks…';
+
+    const params = new URLSearchParams({ risk_appetite: risk });
+    if (salary) params.set('monthly_salary', salary);
+    if (selectedSpend) params.set('spending_profile', selectedSpend);
+    if (loanTypeVal) params.set('loan_type', loanTypeVal);
+
+    const data = await FinAPI.get(`/api/recommendations?${params}`);
+
+    btn.disabled = false;
+    document.getElementById('recSpinner').hidden = true;
+    document.getElementById('recText').textContent = '🔍 Get My Picks';
+
+    if (!data.success) { FinAPI.toast('Failed to load recommendations', 'error'); return; }
+    const { cards, loans, fds, message } = data.data;
+    renderResults(cards, loans, fds, message, loanTypeVal);
+  });
+
+  function matchPct(idx) {
+    return [98, 94, 89, 84, 78][idx] || 75;
+  }
+
+  function renderResults(cards, loans, fds, message, loanTypeVal) {
+    const el = document.getElementById('recommendationResults');
+
+    const cardHtml = cards.length
+      ? cards.map((c, i) => `
+  <div class="product-card" id="recCard${i}">
+    <div class="product-card-top">
+      <span class="badge badge-${c.rewards_type}">${(c.rewards_type||'').toUpperCase()}</span>
+      <span class="match-badge ${i<2?'high':''}">${matchPct(i)}% match</span>
+    </div>
+    <h3 style="margin-top:10px;">${c.card_name}</h3>
+    <p class="bank-name">${c.bank_name||c.bank?.name||''}</p>
+    <div class="product-meta">
+      <span>Fee: <strong>₹${(c.annual_fee||0).toLocaleString('en-IN')}</strong></span>
+      ${c.cashback>0?`<span>Cashback: <strong>${c.cashback}%</strong></span>`:''}
+      <span>Rating: <strong>⭐ ${c.rating}</strong></span>
+    </div>
+    <div class="why-row">
+      <button class="why-toggle" onclick="toggleWhy(this)">Why this card? ▾</button>
+      <div class="why-content">
+        This card aligns with your ${selectedSpend||'general'} spending pattern.
+        ${c.annual_fee===0?' It has zero annual fee, making it risk-free to try.':''}
+        ${c.cashback>0?` Earn ${c.cashback}% cashback automatically each month.`:''}
+        Rating: ⭐ ${c.rating}/5 based on user reviews.
+      </div>
+    </div>
+    <div class="product-card-actions" style="margin-top:12px;">
+      <a href="${c.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply Now</a>
+    </div>
+  </div>`).join('')
+      : '<p style="color:var(--text-muted);">No cards found for your profile.</p>';
+
+    const loanHtml = loanTypeVal && loans.length ? `
+  <h2 style="margin:32px 0 16px;font-size:1.2rem;">🏠 Best Loan Options</h2>
+  <div class="product-grid">${loans.map((l,i) => `
+    <div class="product-card" id="recLoan${i}">
+      <div class="product-card-top">
+        <span class="badge badge-general">${(l.loan_type||'').toUpperCase()}</span>
+        <span class="match-badge">${matchPct(i+1)}% match</span>
+      </div>
+      <h3 style="margin-top:10px;">${l.loan_name}</h3>
+      <p class="bank-name">${l.bank_name||l.bank?.name||''}</p>
+      <div class="product-meta">
+        <span>Rate: <strong style="color:var(--success);">${l.interest_rate}% p.a.</strong></span>
+        <span>Rating: <strong>⭐ ${l.rating}</strong></span>
+      </div>
+      <div class="product-card-actions">
+        <a href="${l.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply</a>
+      </div>
+    </div>`).join('')}</div>` : '';
+
+    const fdHtml = fds.length ? `
+  <h2 style="margin:32px 0 16px;font-size:1.2rem;">📈 Best Fixed Deposits</h2>
+  <div class="product-grid">${fds.map((f,i) => `
+    <div class="product-card" id="recFD${i}">
+      <div class="product-card-top">
+        <span class="badge badge-general">FD</span>
+        <span class="match-badge ${i===0?'high':''}">${matchPct(i)}% match</span>
+      </div>
+      <h3 style="margin-top:10px;">${f.scheme_name||f.bank_name+' FD'}</h3>
+      <p class="bank-name">${f.bank_name||f.bank?.name||''}</p>
+      <div class="product-meta">
+        <span>Rate: <strong style="color:var(--accent);">${f.interest_rate}% p.a.</strong></span>
+        <span>Senior: <strong>${f.senior_citizen_rate}%</strong></span>
+        <span>Rating: <strong>⭐ ${f.rating}</strong></span>
+      </div>
+      <div class="product-card-actions">
+        <a href="${f.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Book FD</a>
+      </div>
+    </div>`).join('')}</div>` : '';
+
+    el.innerHTML = `
+  <div class="alert-strip info" style="margin-bottom:20px;">
+    <span>🎯</span><span>${message}</span>
+  </div>
+  <h2 style="font-size:1.2rem;margin-bottom:16px;">💳 Top Credit Cards For You</h2>
+  <div class="product-grid">${cardHtml}</div>
+  ${loanHtml}
+  ${fdHtml}`;
+  }
+
+  function toggleWhy(btn) {
+    const content = btn.nextElementSibling;
+    content.classList.toggle('open');
+    btn.textContent = content.classList.contains('open') ? 'Why this card? ▴' : 'Why this card? ▾';
+  }
+</script>
+</body>
+</html>
