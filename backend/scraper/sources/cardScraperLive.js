@@ -407,115 +407,74 @@ async function scrapeMyMoneyMantra() {
     });
   }
 
+  if (cards.length === 0) {
+    // Fallback: Heading links
+    $('h2, h3').each((_, el) => {
+      const text = $(el).text().trim();
+      if (!text.toLowerCase().includes('card') || text.split(' ').length > 10) return;
+
+      cards.push({
+        bankName:           canonicalBankName(text),
+        cardName:           text,
+        annualFee:          0,
+        joiningFee:         0,
+        cashback:           0,
+        rewardsDescription: '',
+        network:            null,
+        applyUrl:           finalUrl,
+        source:             'mymoneymantra',
+      });
+    });
+    console.log(`  🔗 [MyMoneyMantra] Heading fallback found: ${cards.length} entries`);
+  }
+
   return cards;
 }
 
-// ── Source 3: Deal4Loans (Cards) ──────────────────────────────────────────────
-// v3 FIX: Added isValidCard() guard on every push — rejects blog posts,
-// travel guides, "Gold Rate in Hyderabad" etc. before they enter results.
+// ── Source 3: BankBazaar ──────────────────────────────────────────────────────
 
-async function scrapeDeal4Loans() {
-  const url  = 'https://www.deal4loans.com/loans/credit-cards/';
-  const html = await fetchPage(url, 'https://www.deal4loans.com/', 15000);
+async function scrapeBankBazaar() {
+  const url  = 'https://www.bankbazaar.com/credit-card.html';
+  const html = await fetchPage(url, 'https://www.bankbazaar.com/', 15000);
   const $    = cheerio.load(html);
   const cards = [];
 
-  debugHtml('Deal4Loans-Cards', html, 300);
+  debugHtml('BankBazaar', html, 200);
 
-  const CARD_SELECTORS = [
-    '.card-list-item',
-    '[class*="card-box"]',
-    '[class*="cardBox"]',
-    '.card-row',
-    '[class*="card-item"]',
-    '[class*="cardRow"]',
-    '.product-row',
-    '.cc-row',
-    'ul li',
-  ];
+  $('table tr').each((rowIdx, row) => {
+    if (rowIdx === 0) return;
+    const cells = $(row).find('td').toArray().map(c => $(c).text().replace(/\s+/g, ' ').trim());
+    if (cells.length < 2) return;
+    
+    const text = cells[0];
+    if (/eligibility|fees|salary|application|what|why|how|features/i.test(text)) return;
+    if (text.length > 120 || text.split(' ').length > 15) return;
+    
+    // Check if it really represents a card
+    if (!text.toLowerCase().includes('card') && !/hdfc|sbi|icici|axis|rbl|kotak|hsbc|standard chartered/i.test(text)) return;
 
-  for (const sel of CARD_SELECTORS) {
-    const els = $(sel);
-    if (els.length >= 2) {
-      els.each((_, el) => {
-        const $el      = $(el);
-        const bankRaw  = $el.find('[class*="bank"]').first().text().trim();
-        const cardRaw  = (
-          $el.find('h2, h3, h4, [class*="name"], [class*="title"]').first().text().trim() ||
-          $el.find('a').first().text().trim()
-        );
-        const feeText  = $el.find('[class*="fee"], [class*="annual"]').first().text().trim();
-        const applyHref= $el.find('a[href*="apply"], a').first().attr('href') || url;
-        const netText  = $el.find('img').first().attr('alt') || '';
-        const rewardTxt= $el.find('[class*="reward"], [class*="benefit"]').first().text().trim();
+    const bankName = canonicalBankName(text);
+    if (!isValidCard(text, bankName)) return;
 
-        const bankName = canonicalBankName(bankRaw || cardRaw);
+    // Clean up BB appended text like "Reward Points", "Travel and Dining"
+    const cardName = text.replace(/(Reward Points|Travel and Dining|Cashback|Shopping)$/i, '').trim();
 
-        // ── v3 VALIDATION GUARD ────────────────────────────────────────────
-        if (!isValidCard(cardRaw, bankName)) return;
-        // ──────────────────────────────────────────────────────────────────
-
-        cards.push({
-          bankName,
-          cardName:           cardRaw,
-          annualFee:          parseINR(feeText),
-          joiningFee:         parseINR(feeText),
-          cashback:           parseRate(rewardTxt) || 0,
-          rewardsDescription: rewardTxt,
-          network:            normalizeNetwork(netText),
-          applyUrl:           applyHref.startsWith('http') ? applyHref : `https://www.deal4loans.com${applyHref}`,
-          source:             'deal4loans',
-        });
-      });
-      if (cards.length >= 2) break;
-    }
-  }
-
-  // Table fallback with validation
-  if (cards.length < 2) {
-    $('table').each((_, tbl) => {
-      const headerCells = $(tbl).find('tr').first().find('th, td')
-        .toArray().map(c => $(c).text().trim().toLowerCase());
-      const cardCol = headerCells.findIndex(h => /card|name/i.test(h));
-      const bankCol = headerCells.findIndex(h => /bank|issuer/i.test(h));
-      const feeCol  = headerCells.findIndex(h => /fee|annual/i.test(h));
-
-      $(tbl).find('tr').each((rowIdx, row) => {
-        if (rowIdx === 0) return;
-        const cells = $(row).find('td').toArray().map(c => $(c).text().trim());
-        if (cells.length < 2) return;
-
-        const cardName = cells[cardCol >= 0 ? cardCol : 0] || cells[0];
-        const bankName = cells[bankCol >= 0 ? bankCol : 1] || '';
-        const feeStr   = cells[feeCol  >= 0 ? feeCol  : 2] || '';
-
-        if (!cardName || cardName.length < 4) return;
-        if (/^(card|name|bank|fee|sl|#)$/i.test(cardName)) return;
-
-        const resolvedBank = canonicalBankName(bankName || cardName);
-
-        // ── v3 VALIDATION GUARD ────────────────────────────────────────────
-        if (!isValidCard(cardName, resolvedBank)) return;
-        // ──────────────────────────────────────────────────────────────────
-
-        cards.push({
-          bankName:           resolvedBank,
-          cardName,
-          annualFee:          parseINR(feeStr),
-          joiningFee:         parseINR(feeStr),
-          cashback:           0,
-          rewardsDescription: '',
-          network:            null,
-          applyUrl:           url,
-          source:             'deal4loans',
-        });
-      });
+    cards.push({
+      bankName,
+      cardName,
+      annualFee:          parseINR(cells[1] || '0'),
+      joiningFee:         parseINR(cells[1] || '0'),
+      cashback:           0,
+      rewardsDescription: cells[1] || '',
+      network:            null,
+      applyUrl:           url,
+      source:             'bankbazaar',
     });
-  }
+  });
 
-  console.log(`  🃏 [Deal4Loans] ${cards.length} cards passed validation`);
+  console.log(`  🎯 [BankBazaar] Extracted ${cards.length} credit cards from tables`);
   return cards;
-}
+};
 
 // ── Deduplication ──────────────────────────────────────────────────────────────
 
@@ -539,7 +498,7 @@ async function scrapeCardSourcesLive() {
   const sources = [
     { name: 'CardInsider',   fn: scrapeCardInsider   },
     { name: 'MyMoneyMantra', fn: scrapeMyMoneyMantra },
-    { name: 'Deal4Loans',    fn: scrapeDeal4Loans    },
+    { name: 'BankBazaar',    fn: scrapeBankBazaar    },
   ];
 
   for (const src of sources) {
