@@ -28,6 +28,7 @@ const LoanModel = require('./Loan');
 const FixedDepositModel = require('./FixedDeposit');
 const UserModel = require('./User');
 const SavedComparisonModel = require('./SavedComparison');
+const ScraperLogModel = require('./ScraperLog');
 
 
 const Bank = BankModel(sequelize);
@@ -36,7 +37,7 @@ const Loan = LoanModel(sequelize);
 const FixedDeposit = FixedDepositModel(sequelize);
 const User = UserModel(sequelize);
 const SavedComparison = SavedComparisonModel(sequelize);
-
+const ScraperLog = ScraperLogModel(sequelize);
 // ─── Associations ──────────────────────────────────────────────────────────────
 
 // One Bank → Many CreditCards
@@ -71,4 +72,4 @@ User.hasMany(SavedComparison, {
 });
 SavedComparison.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
-module.exports = { sequelize, Bank, CreditCard, Loan, FixedDeposit, User, SavedComparison };
+module.exports = { sequelize, Bank, CreditCard, Loan, FixedDeposit, User, SavedComparison, ScraperLog };

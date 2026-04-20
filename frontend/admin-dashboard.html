@@ -1,31 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard – FIN GUIDE</title>
-  <link rel="stylesheet" href="css/main.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – FinGuide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#E8EDF2;--neo-raise:8px 8px 16px #B8C4CE,-8px -8px 16px #FFFFFF;
+  --neo-press:inset 6px 6px 12px #B8C4CE,inset -6px -6px 12px #FFFFFF;
+  --neo-hover:12px 12px 24px #B8C4CE,-12px -12px 24px #FFFFFF;
+  --primary:#4F46E5;--secondary:#06B6D4;--cta:#7C3AED;
+  --text:#0F172A;--muted:#64748B;--danger:#EF4444;--success:#10B981;--warning:#F59E0B;
+  --glow:0 0 20px rgba(79,70,229,0.3);--glow-green:0 0 20px rgba(16,185,129,0.35);
+  --radius-card:20px;--radius-btn:50px;--t:all 0.3s cubic-bezier(0.4,0,0.2,1);--nav-h:64px;
+  --sidebar-w:260px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:var(--bg);} ::-webkit-scrollbar-thumb{background:#B8C4CE;border-radius:6px;}
+a{color:var(--primary);text-decoration:none;transition:var(--t);} img{max-width:100%;display:block;} ul{list-style:none;}
+
+/* ── NAVBAR ── */
+.navbar{height:var(--nav-h);background:var(--bg);box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;position:sticky;top:0;z-index:1000;}
+.nav-inner{padding:0 28px;width:100%;display:flex;align-items:center;gap:16px;}
+.logo{font-size:1.5rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;}
+.admin-badge{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--danger);background:rgba(239,68,68,0.1);padding:4px 12px;border-radius:50px;border:1px solid rgba(239,68,68,0.2);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Poppins',sans-serif;font-weight:600;font-size:0.88rem;border:none;cursor:pointer;text-decoration:none;white-space:nowrap;transition:var(--t);}
+.btn-neo{background:var(--bg);color:var(--primary);border-radius:var(--radius-btn);padding:8px 20px;box-shadow:var(--neo-raise);}
+.btn-neo:hover{transform:translateY(-2px);box-shadow:var(--neo-hover);color:var(--primary);}
+.btn-primary{background:linear-gradient(135deg,var(--cta),var(--primary));color:white;border-radius:var(--radius-btn);padding:8px 20px;box-shadow:0 4px 15px rgba(124,58,237,0.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,0.5);color:white;}
+.btn-secondary{background:var(--bg);color:var(--text);border-radius:var(--radius-btn);padding:8px 20px;box-shadow:var(--neo-raise);}
+.btn-secondary:hover{transform:translateY(-2px);box-shadow:var(--neo-hover);color:var(--primary);}
+.btn-secondary:active{box-shadow:var(--neo-press);transform:translateY(0);}
+.btn-sm{padding:6px 14px;font-size:0.78rem;}
+.btn-danger{background:linear-gradient(135deg,#DC2626,var(--danger));color:white;border-radius:var(--radius-btn);padding:8px 20px;box-shadow:0 4px 15px rgba(239,68,68,0.35);}
+.btn-danger:hover{transform:translateY(-2px);color:white;box-shadow:0 8px 25px rgba(239,68,68,0.5);}
+
+/* ── DASHBOARD LAYOUT ── */
+.dash-layout{display:flex;min-height:calc(100vh - var(--nav-h));}
+
+/* ── SIDEBAR ── */
+.admin-sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--text);
+  min-height:calc(100vh - var(--nav-h));
+  display:flex;flex-direction:column;
+  padding:24px 16px;
+  position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));
+  overflow-y:auto;
+}
+.sidebar-user{
+  background:rgba(255,255,255,0.05);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:24px;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.sidebar-role{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--secondary);margin-bottom:4px;}
+.sidebar-name{font-size:1rem;font-weight:700;color:white;}
+
+.sidebar-nav a{
+  display:flex;align-items:center;gap:12px;
+  color:rgba(255,255,255,0.55);font-size:0.875rem;font-weight:500;
+  padding:12px 16px;border-radius:14px;transition:var(--t);
+  margin-bottom:4px;text-decoration:none;
+  position:relative;overflow:hidden;
+}
+.sidebar-nav a::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  border-radius:0 4px 4px 0;transform:scaleY(0);transition:transform 0.2s ease;
+}
+.sidebar-nav a:hover{background:rgba(255,255,255,0.07);color:white;}
+.sidebar-nav a.active{background:rgba(79,70,229,0.15);color:white;}
+.sidebar-nav a.active::before{transform:scaleY(1);}
+.sidebar-nav a .icon{font-size:1.1rem;flex-shrink:0;width:22px;}
+
+.sidebar-nav a.scraper-link{
+  background:linear-gradient(135deg,rgba(99,102,241,0.15),transparent);
+  color:rgba(255,255,255,0.7);
+  border:1px solid rgba(99,102,241,0.2);
+  margin-top:8px;
+}
+.sidebar-divider{border-top:1px solid rgba(255,255,255,0.08);margin:16px 0;}
+
+/* ── MAIN CONTENT ── */
+.dash-main{flex:1;min-width:0;padding:32px 36px;background:var(--bg);}
+
+/* ── NEO PANELS ── */
+.neo-panel{background:var(--bg);box-shadow:var(--neo-raise);border-radius:var(--radius-card);padding:24px;margin-bottom:22px;}
+
+/* ── STATS GRID ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px;margin-bottom:24px;}
+.stat-card{
+  background:var(--bg);box-shadow:var(--neo-raise);border-radius:20px;
+  padding:24px 20px;text-align:center;transition:var(--t);position:relative;overflow:hidden;
+}
+.stat-card:hover{box-shadow:var(--glow),var(--neo-hover);transform:translateY(-4px);}
+.stat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  border-radius:0 0 4px 4px;
+}
+.stat-card.indigo::after{background:linear-gradient(90deg,var(--primary),var(--cta));}
+.stat-card.cyan::after{background:linear-gradient(90deg,var(--secondary),#0EA5E9);}
+.stat-card.green::after{background:linear-gradient(90deg,var(--success),#34D399);}
+.stat-card.amber::after{background:linear-gradient(90deg,var(--warning),#FCD34D);}
+.stat-icon{font-size:1.6rem;margin-bottom:10px;display:block;}
+.stat-num{font-size:2.2rem;font-weight:900;line-height:1;margin-bottom:6px;}
+.stat-num.indigo{color:var(--primary);} .stat-num.cyan{color:var(--secondary);} .stat-num.green{color:var(--success);} .stat-num.amber{color:var(--warning);}
+.stat-label{font-size:0.78rem;color:var(--muted);font-weight:500;}
+
+/* ── DATA TABLE ── */
+.table-wrap{background:var(--bg);box-shadow:var(--neo-raise);border-radius:var(--radius-card);overflow:hidden;overflow-x:auto;}
+.data-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.data-table th{background:linear-gradient(135deg,var(--primary),var(--cta));color:white;font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;padding:14px 16px;text-align:left;}
+.data-table td{padding:11px 16px;border-bottom:1px solid rgba(0,0,0,0.04);color:var(--muted);}
+.data-table tbody tr:hover td{background:rgba(79,70,229,0.03);}
+
+/* STATUS BADGES */
+.status-badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:0.68rem;font-weight:700;}
+.status-active{background:rgba(16,185,129,0.12);color:var(--success);}
+.status-archived{background:rgba(239,68,68,0.12);color:var(--danger);}
+.neo-badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:0.68rem;font-weight:700;text-transform:uppercase;}
+.badge-admin{background:rgba(239,68,68,0.12);color:var(--danger);}
+.badge-general{background:rgba(79,70,229,0.12);color:var(--primary);}
+.badge-danger{background:rgba(239,68,68,0.12);color:var(--danger);}
+
+/* ROW ACTIONS */
+.row-actions{display:flex;gap:6px;}
+
+/* ── SCRAPER CENTER ── */
+.scraper-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:24px;}
+.scraper-eyebrow{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);display:block;margin-bottom:4px;}
+
+/* SCRAPER RUN BUTTON */
+#runScraperBtn{
+  background:linear-gradient(135deg,var(--success),#059669);
+  color:white;border-radius:12px;padding:14px 28px;
+  font-size:0.95rem;font-weight:700;border:none;cursor:pointer;
+  font-family:'Poppins',sans-serif;letter-spacing:0.04em;
+  box-shadow:var(--glow-green),0 4px 15px rgba(16,185,129,0.4);
+  transition:var(--t);position:relative;overflow:hidden;
+}
+#runScraperBtn::before{
+  content:'';position:absolute;top:50%;left:50%;width:0;height:0;
+  background:rgba(255,255,255,0.15);border-radius:50%;transform:translate(-50%,-50%);
+  transition:width 0.4s ease,height 0.4s ease;
+}
+#runScraperBtn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 12px 30px rgba(16,185,129,0.5);}
+#runScraperBtn:hover::before{width:200px;height:200px;}
+#runScraperBtn:disabled{opacity:0.65;cursor:not-allowed;transform:none;}
+
+/* PULSE ANIMATION */
+@keyframes pulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4),var(--glow-green);}
+  50%{box-shadow:0 0 0 8px rgba(16,185,129,0),var(--glow-green);}
+}
+.pulse-active {animation:pulse 2s infinite;}
+
+/* SCRAPER RESULT BANNER */
+.scraper-banner{
+  border-radius:16px;padding:20px 24px;margin-bottom:20px;
+  display:none;animation:fadeIn 0.4s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.banner-success{background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1.5px solid var(--success);}
+.banner-error{background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1.5px solid var(--danger);}
+
+/* TERMINAL LOG BOX */
+.terminal-box{
+  background:var(--text);
+  border-radius:16px;
+  overflow:hidden;
+}
+.terminal-titlebar{
+  background:#1F2937;
+  padding:12px 20px;
+  display:flex;align-items:center;gap:8px;justify-content:space-between;
+}
+.terminal-dots{display:flex;gap:7px;}
+.terminal-dot{width:13px;height:13px;border-radius:50%;}
+.terminal-dot.red{background:#EF4444;} .terminal-dot.yellow{background:#F59E0B;} .terminal-dot.green{background:var(--success);}
+.terminal-title{font-size:0.72rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.08em;}
+.terminal-body{padding:20px;max-height:320px;overflow-y:auto;font-family:'Courier New',monospace;font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.8;}
+.terminal-body::-webkit-scrollbar{width:4px;} .terminal-body::-webkit-scrollbar-track{background:#1F2937;} .terminal-body::-webkit-scrollbar-thumb{background:#4B5563;border-radius:4px;}
+.log-success{color:#34D399;}  .log-error{color:#F87171;}  .log-info{color:#60A5FA;}  .log-time{color:#6B7280;font-size:0.72rem;}
+.log-row{margin-bottom:4px;display:flex;gap:12px;}
+
+/* NOTICE BAR */
+.notice-bar{background:var(--bg);box-shadow:var(--neo-press);border-radius:12px;padding:14px 18px;font-size:0.8rem;color:var(--muted);margin-top:16px;line-height:1.7;}
+
+/* ── FORM / INPUT ── */
+.neo-input,.neo-select{width:100%;padding:10px 14px;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neo-press);font-family:'Poppins',sans-serif;font-size:0.85rem;color:var(--text);outline:none;transition:var(--t);}
+.neo-input:focus,.neo-select:focus{box-shadow:var(--neo-press),0 0 0 2px var(--primary);}
+.neo-select{appearance:none;-webkit-appearance:none;}
+.form-field{margin-bottom:16px;}
+.form-field label{font-size:0.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:8px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);z-index:2000;display:none;place-items:center;}
+.modal-overlay.open{display:grid;}
+.modal{background:var(--bg);box-shadow:var(--neo-raise);border-radius:24px;padding:36px;width:90%;max-width:580px;max-height:88vh;overflow-y:auto;}
+.modal h2{font-size:1.2rem;font-weight:800;margin-bottom:24px;}
+
+/* EMPTY STATE */
+.empty-state{padding:48px;text-align:center;color:var(--muted);}
+.empty-state-icon{font-size:2.2rem;margin-bottom:12px;}
+
+/* QUICK LINKS */
+.quick-links{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* PAGE SECTION TOGGLE */
+.tab-section[hidden]{display:none;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .admin-sidebar{display:none;}
+  .dash-main{padding:24px 20px;}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .dash-main{padding:20px 16px;}
+}
+</style>
 </head>
 <body>
 
-<!-- Admin-specific nav — no public nav links -->
+<!-- NAVBAR -->
 <nav class="navbar">
-  <div class="nav-container">
+  <div class="nav-inner">
     <a href="/" class="logo">FIN<span>GUIDE</span></a>
-    <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--danger);background:var(--danger-lt);padding:3px 10px;border-radius:var(--radius-badge);">🔒 Admin Panel</span>
-    <div class="nav-actions" style="margin-left:auto;">
+    <span class="admin-badge">🔒 Admin Panel</span>
+    <div style="margin-left:auto;display:flex;gap:10px;">
       <a href="/" class="btn btn-secondary btn-sm">← Public Site</a>
       <button onclick="logout()" class="btn btn-primary btn-sm" id="logoutBtn">Logout</button>
     </div>
   </div>
 </nav>
 
-<div class="dashboard-layout">
-  <!-- Sidebar nav with icon + label + active state -->
-  <aside class="sidebar">
-    <div class="admin-sidebar-header">
-      <div class="admin-role-badge">Administrator</div>
-      <div class="admin-name" id="adminName">Admin</div>
+<div class="dash-layout">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-role">Administrator</div>
+      <div class="sidebar-name" id="adminName">Admin</div>
     </div>
     <nav class="sidebar-nav">
       <a href="#" onclick="showTab('overview');return false;" class="active" id="nav-overview">
@@ -40,109 +263,162 @@
       <a href="#" onclick="showTab('fds');return false;" id="nav-fds">
         <span class="icon">📈</span> Fixed Deposits
       </a>
-      <a href="#" onclick="showTab('users');return false;" id="nav-users">
-        <span class="icon">👥</span> Users
-      </a>
       <a href="#" onclick="showTab('banks');return false;" id="nav-banks">
         <span class="icon">🏦</span> Banks
+      </a>
+      <div class="sidebar-divider"></div>
+      <a href="#" onclick="showTab('scraper');return false;" id="nav-scraper" class="scraper-link">
+        <span class="icon">🔄</span> Scraper Center
       </a>
     </nav>
   </aside>
 
-  <main class="dash-content" id="dashContent">
+  <!-- MAIN -->
+  <main class="dash-main" id="dashContent">
 
-    <!-- ── Overview Tab ── -->
+    <!-- ── OVERVIEW TAB ── -->
     <div id="tab-overview">
-      <!-- Top metric header row -->
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
         <div>
-          <span class="section-eyebrow">Admin</span>
-          <h1 style="font-size:1.5rem;">Dashboard Overview</h1>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);margin-bottom:4px;">Admin</div>
+          <h1 style="font-size:1.6rem;font-weight:800;">Dashboard Overview</h1>
         </div>
         <button class="btn btn-secondary btn-sm" id="refreshRates">🔄 Refresh Rates</button>
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-num" id="sCC">—</div>
+        <div class="stat-card indigo">
+          <span class="stat-icon">💳</span>
+          <div class="stat-num indigo" id="sCC">—</div>
           <div class="stat-label">Credit Cards</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-num" id="sLoans">—</div>
+        <div class="stat-card cyan">
+          <span class="stat-icon">🏠</span>
+          <div class="stat-num cyan" id="sLoans">—</div>
           <div class="stat-label">Loans</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-num" id="sFDs">—</div>
+        <div class="stat-card green">
+          <span class="stat-icon">📈</span>
+          <div class="stat-num green" id="sFDs">—</div>
           <div class="stat-label">FD Schemes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="sUsers">—</div>
-          <div class="stat-label">Users</div>
         </div>
       </div>
 
-      <div style="background:white;border:var(--card-border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-card);margin-top:8px;">
-        <h3 style="margin-bottom:12px;font-size:0.95rem;">Quick Links</h3>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="neo-panel">
+        <h3 style="font-size:0.95rem;margin-bottom:14px;">Quick Links</h3>
+        <div class="quick-links">
           <a href="/credit-cards.html" class="btn btn-secondary btn-sm">View Cards (public)</a>
           <a href="/loans.html" class="btn btn-secondary btn-sm">View Loans</a>
           <a href="/fixed-deposits.html" class="btn btn-secondary btn-sm">View FDs</a>
+          <button id="resetVisitorBtn" class="btn btn-sm" style="background:var(--bg);color:var(--danger);box-shadow:var(--neo-raise);border-radius:var(--radius-btn);">♻ Reset Visitors</button>
         </div>
       </div>
     </div>
 
-    <!-- ── Cards Tab ── -->
-    <div id="tab-cards" hidden>
+    <!-- ── CARDS TAB ── -->
+    <div id="tab-cards" hidden="">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <h1 style="font-size:1.4rem;">Credit Cards</h1>
+        <h1 style="font-size:1.4rem;font-weight:800;">Credit Cards</h1>
         <button class="btn btn-primary btn-sm" onclick="openAddModal('card')" id="addCardBtn">+ Add Card</button>
       </div>
-      <div id="cardsTable">
-        <div class="empty-state"><div class="empty-state-icon">💳</div><p>Loading data…</p></div>
-      </div>
+      <div id="cardsTable"><div class="empty-state"><div class="empty-state-icon">💳</div><p>Loading data…</p></div></div>
     </div>
 
-    <!-- ── Loans Tab ── -->
-    <div id="tab-loans" hidden>
+    <!-- ── LOANS TAB ── -->
+    <div id="tab-loans" hidden="">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <h1 style="font-size:1.4rem;">Loans</h1>
+        <h1 style="font-size:1.4rem;font-weight:800;">Loans</h1>
         <button class="btn btn-primary btn-sm" onclick="openAddModal('loan')" id="addLoanBtn">+ Add Loan</button>
       </div>
-      <div id="loansTable">
-        <div class="empty-state"><div class="empty-state-icon">🏠</div><p>Loading data…</p></div>
-      </div>
+      <div id="loansTable"><div class="empty-state"><div class="empty-state-icon">🏠</div><p>Loading data…</p></div></div>
     </div>
 
-    <!-- ── FDs Tab ── -->
-    <div id="tab-fds" hidden>
+    <!-- ── FDs TAB ── -->
+    <div id="tab-fds" hidden="">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <h1 style="font-size:1.4rem;">Fixed Deposits</h1>
+        <h1 style="font-size:1.4rem;font-weight:800;">Fixed Deposits</h1>
         <button class="btn btn-primary btn-sm" onclick="openAddModal('fd')" id="addFDBtn">+ Add FD</button>
       </div>
-      <div id="fdsTable">
-        <div class="empty-state"><div class="empty-state-icon">📈</div><p>Loading data…</p></div>
+      <div id="fdsTable"><div class="empty-state"><div class="empty-state-icon">📈</div><p>Loading data…</p></div></div>
+    </div>
+
+    <!-- ── BANKS TAB ── -->
+    <div id="tab-banks" hidden="">
+      <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:20px;">Banks</h1>
+      <div id="banksTable"><div class="empty-state"><div class="empty-state-icon">🏦</div><p>Loading data…</p></div></div>
+    </div>
+
+    <!-- ── SCRAPER CENTER TAB ── -->
+    <div id="tab-scraper" hidden="">
+      <div class="scraper-header">
+        <div>
+          <span class="scraper-eyebrow">⚡ Automation</span>
+          <h1 style="font-size:1.4rem;font-weight:800;margin:0;">Scraper Center</h1>
+          <p style="color:var(--muted);font-size:0.82rem;margin-top:4px;">Runs every Sunday 2 AM IST · Updates Credit Cards, Loans &amp; FD rates from major Indian banks</p>
+        </div>
+        <button id="runScraperBtn" onclick="triggerScraper()">▶ Run Scraper Now</button>
+      </div>
+
+      <!-- Result Banner -->
+      <div id="scraperResultBanner" class="scraper-banner"></div>
+
+      <!-- DB Stats -->
+      <div class="stats-grid">
+        <div class="stat-card indigo">
+          <span class="stat-icon">💳</span>
+          <div class="stat-num indigo" id="scCC">—</div>
+          <div class="stat-label">Cards in DB</div>
+        </div>
+        <div class="stat-card cyan">
+          <span class="stat-icon">🏠</span>
+          <div class="stat-num cyan" id="scLoan">—</div>
+          <div class="stat-label">Loans in DB</div>
+        </div>
+        <div class="stat-card green">
+          <span class="stat-icon">📈</span>
+          <div class="stat-num green" id="scFD">—</div>
+          <div class="stat-label">FD Schemes in DB</div>
+        </div>
+        <div class="stat-card amber">
+          <span class="stat-icon">🕐</span>
+          <div class="stat-num amber" id="scLastRun" style="font-size:0.8rem;">—</div>
+          <div class="stat-label">Last Successful Run</div>
+        </div>
+      </div>
+
+      <!-- Terminal Log Box -->
+      <div class="neo-panel" style="padding:0;overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.05);">
+          <h3 style="font-size:0.95rem;font-weight:700;">📋 Scraper Run History</h3>
+          <button onclick="loadScraperLogs()" class="btn btn-secondary btn-sm">↻ Refresh</button>
+        </div>
+        <div class="terminal-box" id="scraperLogsTable">
+          <div class="terminal-titlebar">
+            <div class="terminal-dots">
+              <div class="terminal-dot red"></div>
+              <div class="terminal-dot yellow"></div>
+              <div class="terminal-dot green"></div>
+            </div>
+            <span class="terminal-title">finguide-scraper.log</span>
+            <span></span>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <div class="log-row"><span class="log-time">[system]</span><span class="log-info">Click ↻ Refresh or run the scraper to see logs.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice-bar">
+        ⏰ <strong>Schedule:</strong> Every <strong>Sunday at 2:00 AM IST</strong> via node-cron. &nbsp;|&nbsp;
+        🗄️ <strong>Source:</strong> Fallback dataset (11 major Indian banks) + BankBazaar live attempt. &nbsp;|&nbsp;
+        🔒 <strong>Safe mode:</strong> Old data kept if live scrape fails.
       </div>
     </div>
 
-    <!-- ── Users Tab ── -->
-    <div id="tab-users" hidden>
-      <h1 style="font-size:1.4rem;margin-bottom:20px;">Users</h1>
-      <div id="usersTable">
-        <div class="empty-state"><div class="empty-state-icon">👥</div><p>Loading data…</p></div>
-      </div>
-    </div>
-
-    <!-- ── Banks Tab ── -->
-    <div id="tab-banks" hidden>
-      <h1 style="font-size:1.4rem;margin-bottom:20px;">Banks</h1>
-      <div id="banksTable">
-        <div class="empty-state"><div class="empty-state-icon">🏦</div><p>Loading data…</p></div>
-      </div>
-    </div>
   </main>
 </div>
 
-<!-- Add/Edit Modal -->
+<!-- ADD/EDIT MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <h2 id="modalTitle">Add Product</h2>
@@ -158,20 +434,19 @@
 
 <script src="js/api.js"></script>
 <script>
-  // Auth guard — admin only
+  // ── AUTH GUARD ──
   const token = FinAPI.getToken();
   const user = FinAPI.getAdmin();
   if (!token || !user || user.role !== 'admin') location.href = '/admin-login.html';
   document.getElementById('adminName').textContent = user?.name || 'Admin';
 
-  // Load dashboard stats
+  // ── LOAD STATS ──
   FinAPI.get('/api/admin/dashboard').then(d => {
     if (!d.success) return;
     const s = d.data;
-    document.getElementById('sCC').textContent = s.credit_cards || '—';
-    document.getElementById('sLoans').textContent = s.loans || '—';
-    document.getElementById('sFDs').textContent = s.fixed_deposits || '—';
-    document.getElementById('sUsers').textContent = s.users || '—';
+    document.getElementById('sCC').textContent   = s.credit_cards   || '—';
+    document.getElementById('sLoans').textContent = s.loans          || '—';
+    document.getElementById('sFDs').textContent   = s.fixed_deposits || '—';
   });
 
   document.getElementById('refreshRates').addEventListener('click', async () => {
@@ -179,19 +454,27 @@
     FinAPI.toast(data.message || 'Done', data.success ? 'success' : 'error');
   });
 
+  document.getElementById('resetVisitorBtn').addEventListener('click', async () => {
+    if (!confirm('Reset public visitor counter to 0?')) return;
+    const data = await FinAPI.post('/api/admin/reset-visitors', {});
+    FinAPI.toast(data.message || 'Counter reset', data.success ? 'success' : 'error');
+  });
+
+  // ── TAB SWITCH ──
   async function showTab(name) {
-    ['overview','cards','loans','fds','users','banks'].forEach(t => {
+    ['overview','cards','loans','fds','banks','scraper'].forEach(t => {
       document.getElementById(`tab-${t}`).hidden = t !== name;
       const nav = document.getElementById(`nav-${t}`);
       if (nav) nav.classList.toggle('active', t === name);
     });
-    if (name === 'cards' && document.getElementById('cardsTable').querySelector('.empty-state')) loadAdminCards();
-    if (name === 'loans' && document.getElementById('loansTable').querySelector('.empty-state')) loadAdminLoans();
-    if (name === 'fds' && document.getElementById('fdsTable').querySelector('.empty-state')) loadAdminFDs();
-    if (name === 'users' && document.getElementById('usersTable').querySelector('.empty-state')) loadAdminUsers();
-    if (name === 'banks' && document.getElementById('banksTable').querySelector('.empty-state')) loadAdminBanks();
+    if (name === 'cards'  && document.getElementById('cardsTable').querySelector('.empty-state'))  loadAdminCards();
+    if (name === 'loans'  && document.getElementById('loansTable').querySelector('.empty-state'))  loadAdminLoans();
+    if (name === 'fds'    && document.getElementById('fdsTable').querySelector('.empty-state'))    loadAdminFDs();
+    if (name === 'banks'  && document.getElementById('banksTable').querySelector('.empty-state'))  loadAdminBanks();
+    if (name === 'scraper') { loadScraperStats(); loadScraperLogs(); }
   }
 
+  // ── ADMIN DATA LOADERS ──
   async function loadAdminCards() {
     const d = await FinAPI.get('/api/credit-cards?limit=80&sort=rating');
     document.getElementById('cardsTable').innerHTML = renderTable(d.data, ['card_name','bank_name','rewards_type','annual_fee','interest_rate','rating','is_active'], 'credit-cards');
@@ -204,55 +487,39 @@
     const d = await FinAPI.get('/api/fds?limit=40');
     document.getElementById('fdsTable').innerHTML = renderTable(d.data, ['scheme_name','bank_name','interest_rate','senior_citizen_rate','compounding_frequency','rating'], 'fds');
   }
-  async function loadAdminUsers() {
-    const d = await FinAPI.get('/api/admin/users');
-    if (!d.success) {
-      document.getElementById('usersTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No database connected — user data unavailable.</p></div>';
-      return;
-    }
-    document.getElementById('usersTable').innerHTML = renderTable(d.data||[], ['name','email','role','monthly_salary','spending_profile','risk_appetite'], 'users');
-  }
   async function loadAdminBanks() {
     const d = await FinAPI.get('/api/banks');
     document.getElementById('banksTable').innerHTML = renderTable(d.data, ['name','bank_type','established','headquarters','website'], 'banks');
   }
 
   const headMap = {
-    card_name:'Card Name', bank_name:'Bank', loan_name:'Loan Name', scheme_name:'Scheme',
-    name:'Name', email:'Email', rewards_type:'Type', annual_fee:'Annual Fee',
-    interest_rate:'Rate %', senior_citizen_rate:'Sr. Rate', cashback:'Cashback',
-    rating:'Rating', is_active:'Active', loan_type:'Type', processing_fee:'Proc. Fee',
-    compounding_frequency:'Compounding', role:'Role', monthly_salary:'Income',
-    spending_profile:'Spending', risk_appetite:'Risk', established:'Est.',
-    headquarters:'HQ', website:'Website', bank_type:'Bank Type'
+    card_name:'Card Name',bank_name:'Bank',loan_name:'Loan Name',scheme_name:'Scheme',
+    name:'Name',email:'Email',rewards_type:'Type',annual_fee:'Annual Fee',
+    interest_rate:'Rate %',senior_citizen_rate:'Sr. Rate',cashback:'Cashback',
+    rating:'Rating',is_active:'Active',loan_type:'Type',processing_fee:'Proc. Fee',
+    compounding_frequency:'Compounding',role:'Role',established:'Est.',
+    headquarters:'HQ',website:'Website',bank_type:'Bank Type'
   };
 
   function renderTable(rows, cols, resource) {
     if (!rows || !rows.length) return '<div class="empty-state"><p>No data found.</p></div>';
-    return `
-  <div class="table-wrap">
-    <table class="data-table">
-      <thead><tr>${cols.map(c => `<th>${headMap[c]||c}</th>`).join('')}<th>Actions</th></tr></thead>
-      <tbody>${rows.map(r => `
-        <tr>
-          ${cols.map(c => {
-            let val = r[c] != null ? r[c] : '-';
-            if (c === 'is_active') val = val === true || val === 1
-              ? '<span class="status-badge status-active">Active</span>'
-              : '<span class="status-badge status-archived">Inactive</span>';
-            if (c === 'role') val = `<span class="badge badge-${val==='admin'?'danger':'general'}">${val}</span>`;
-            return `<td>${val}</td>`;
-          }).join('')}
-          <td>
-            <div class="row-actions">
-              ${['credit-cards', 'loans', 'fds'].includes(resource) ? `<button class="btn btn-primary btn-sm" onclick="openAddModal('${resource === 'credit-cards' ? 'card' : resource === 'loans' ? 'loan' : 'fd'}', ${JSON.stringify(r).replace(/"/g, '&quot;')})">Edit</button>` : ''}
-              <button class="btn btn-secondary btn-sm" onclick="deleteItem('${resource}',${r.id})">Delete</button>
-            </div>
-          </td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-  </div>`;
+    return `<div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>${cols.map(c => `<th>${headMap[c]||c}</th>`).join('')}<th>Actions</th></tr></thead>
+        <tbody>${rows.map(r => `<tr>${cols.map(c => {
+          let val = r[c] != null ? r[c] : '-';
+          if (c === 'is_active') val = val === true || val === 1
+            ? '<span class="status-badge status-active">Active</span>'
+            : '<span class="status-badge status-archived">Inactive</span>';
+          if (c === 'role') val = `<span class="neo-badge badge-${val==='admin'?'admin':'general'}">${val}</span>`;
+          return `<td>${val}</td>`;
+        }).join('')}
+        <td><div class="row-actions">
+          ${['credit-cards','loans','fds'].includes(resource) ? `<button class="btn btn-primary btn-sm" onclick="openAddModal('${resource==='credit-cards'?'card':resource==='loans'?'loan':'fd'}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit</button>` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="deleteItem('${resource}',${r.id})">Delete</button>
+        </div></td></tr>`).join('')}</tbody>
+      </table>
+    </div>`;
   }
 
   async function deleteItem(resource, id) {
@@ -262,95 +529,61 @@
     if (d.success) location.reload();
   }
 
+  // ── ADD/EDIT MODAL ──
   let currentModalType = '';
   let currentEditId = null;
 
   function openAddModal(type, rowData = null) {
     currentModalType = type;
     currentEditId = rowData ? rowData.id : null;
-
-    let titleText = type === 'card' ? 'Credit Card' : type === 'loan' ? 'Loan' : 'Fixed Deposit';
+    const titleText = type === 'card' ? 'Credit Card' : type === 'loan' ? 'Loan' : 'Fixed Deposit';
     document.getElementById('modalTitle').textContent = `${rowData ? 'Edit' : 'Add'} ${titleText}`;
-    
-    let modalFields = document.getElementById('modalFields');
+    const gv = (key, def='') => (rowData && rowData[key] !== undefined && rowData[key] !== null) ? rowData[key] : def;
     let html = '';
+    const field = (label, name, type, val, extra='') =>
+      `<div class="form-field"><label>${label}</label><input type="${type}" name="${name}" class="neo-input" value="${val}" ${extra}></div>`;
+    const selField = (label, name, opts, cur) =>
+      `<div class="form-field"><label>${label}</label><select name="${name}" class="neo-select">${opts.map(([v,l])=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`).join('')}</select></div>`;
 
-    const getValue = (key, defaultVal = '') => {
-      if (rowData && rowData[key] !== undefined && rowData[key] !== null) {
-        return rowData[key];
-      }
-      return defaultVal;
-    };
+    if (type === 'card') html = `
+      ${field('Bank Name','bank_name','text',gv('bank_name'),'required')}
+      ${field('Card Name','card_name','text',gv('card_name'),'required')}
+      ${selField('Rewards Type','rewards_type',[['Cashback','Cashback'],['Travel','Travel'],['Fuel','Fuel'],['Shopping','Shopping'],['Lifestyle','Lifestyle']],gv('rewards_type'))}
+      ${field('Annual Fee (₹)','annual_fee','number',gv('annual_fee'))}
+      ${field('Interest Rate %','interest_rate','number',gv('interest_rate'),'step="0.01"')}
+      ${field('Credit Limit Min','credit_limit_min','number',gv('credit_limit_min'))}
+      ${field('Credit Limit Max','credit_limit_max','number',gv('credit_limit_max'))}
+      ${field('Joining Fee','joining_fee','number',gv('joining_fee'))}
+      ${field('Rating (0-5)','rating','number',gv('rating'),'step="0.1" min="0" max="5"')}
+      ${field('Apply URL','apply_url','url',gv('apply_url'))}
+      <div class="form-field"><label><input type="checkbox" name="is_active" ${!rowData || gv('is_active',true)===true || gv('is_active')===1?'checked':''}> Is Active</label></div>`;
+    else if (type === 'loan') html = `
+      ${field('Bank Name','bank_name','text',gv('bank_name'),'required')}
+      ${field('Loan Name','loan_name','text',gv('loan_name'),'required')}
+      ${selField('Loan Type','loan_type',[['Personal','Personal'],['Home','Home'],['Car','Car'],['Education','Education'],['Business','Business']],gv('loan_type'))}
+      ${field('Interest Rate Min %','interest_rate_min','number',gv('interest_rate_min'),'step="0.01"')}
+      ${field('Interest Rate Max %','interest_rate_max','number',gv('interest_rate_max'),'step="0.01"')}
+      ${field('Processing Fee %','processing_fee','number',gv('processing_fee'),'step="0.01"')}
+      ${field('Min Amount (₹)','min_amount','number',gv('min_amount'))}
+      ${field('Max Amount (₹)','max_amount','number',gv('max_amount'))}
+      ${field('Min Tenure Months','min_tenure_months','number',gv('min_tenure_months'))}
+      ${field('Max Tenure Months','max_tenure_months','number',gv('max_tenure_months'))}
+      ${field('Rating (0-5)','rating','number',gv('rating'),'step="0.1" min="0" max="5"')}
+      ${field('Apply URL','apply_url','url',gv('apply_url'))}`;
+    else if (type === 'fd') html = `
+      ${field('Bank Name','bank_name','text',gv('bank_name'),'required')}
+      ${field('Scheme Name','scheme_name','text',gv('scheme_name'),'required')}
+      ${field('Interest Rate %','interest_rate','number',gv('interest_rate'),'step="0.01"')}
+      ${field('Senior Citizen Rate %','senior_citizen_rate','number',gv('senior_citizen_rate'),'step="0.01"')}
+      ${field('Min Deposit (₹)','min_deposit','number',gv('min_deposit'))}
+      ${field('Max Deposit (₹)','max_deposit','number',gv('max_deposit'))}
+      ${field('Min Tenure Days','min_tenure_days','number',gv('min_tenure_days'))}
+      ${field('Max Tenure Days','max_tenure_days','number',gv('max_tenure_days'))}
+      ${selField('Compounding','compounding_frequency',[['Monthly','Monthly'],['Quarterly','Quarterly'],['Half-Yearly','Half-Yearly'],['Yearly','Yearly']],gv('compounding_frequency'))}
+      ${field('Rating (0-5)','rating','number',gv('rating'),'step="0.1" min="0" max="5"')}
+      ${field('Apply URL','apply_url','url',gv('apply_url'))}`;
 
-    if (type === 'card') {
-      html += `
-        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Card Name</label><input type="text" name="card_name" class="form-control" value="${getValue('card_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Rewards Type</label>
-          <select name="rewards_type" class="form-control" required>
-            <option value="Cashback" ${getValue('rewards_type') === 'Cashback' ? 'selected' : ''}>Cashback</option>
-            <option value="Travel" ${getValue('rewards_type') === 'Travel' ? 'selected' : ''}>Travel</option>
-            <option value="Fuel" ${getValue('rewards_type') === 'Fuel' ? 'selected' : ''}>Fuel</option>
-            <option value="Shopping" ${getValue('rewards_type') === 'Shopping' ? 'selected' : ''}>Shopping</option>
-            <option value="Lifestyle" ${getValue('rewards_type') === 'Lifestyle' ? 'selected' : ''}>Lifestyle</option>
-          </select>
-        </div>
-        <div style="margin-bottom:15px"><label class="form-label">Annual Fee</label><input type="number" name="annual_fee" class="form-control" value="${getValue('annual_fee')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Interest Rate %</label><input type="number" step="0.01" name="interest_rate" class="form-control" value="${getValue('interest_rate')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Credit Limit Min</label><input type="number" name="credit_limit_min" class="form-control" value="${getValue('credit_limit_min')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Credit Limit Max</label><input type="number" name="credit_limit_max" class="form-control" value="${getValue('credit_limit_max')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Joining Fee</label><input type="number" name="joining_fee" class="form-control" value="${getValue('joining_fee')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
-        <div style="margin-bottom:15px"><label><input type="checkbox" name="is_active" ${!rowData || getValue('is_active', true) === true || getValue('is_active') === 1 ? 'checked' : ''}> Is Active</label></div>
-      `;
-    } else if (type === 'loan') {
-      html += `
-        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Loan Name</label><input type="text" name="loan_name" class="form-control" value="${getValue('loan_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Loan Type</label>
-          <select name="loan_type" class="form-control" required>
-            <option value="Personal" ${getValue('loan_type') === 'Personal' ? 'selected' : ''}>Personal</option>
-            <option value="Home" ${getValue('loan_type') === 'Home' ? 'selected' : ''}>Home</option>
-            <option value="Car" ${getValue('loan_type') === 'Car' ? 'selected' : ''}>Car</option>
-            <option value="Education" ${getValue('loan_type') === 'Education' ? 'selected' : ''}>Education</option>
-            <option value="Business" ${getValue('loan_type') === 'Business' ? 'selected' : ''}>Business</option>
-          </select>
-        </div>
-        <div style="margin-bottom:15px"><label class="form-label">Interest Rate Min %</label><input type="number" step="0.01" name="interest_rate_min" class="form-control" value="${getValue('interest_rate_min')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Interest Rate Max %</label><input type="number" step="0.01" name="interest_rate_max" class="form-control" value="${getValue('interest_rate_max')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Processing Fee %</label><input type="number" step="0.01" name="processing_fee" class="form-control" value="${getValue('processing_fee')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Min Amount</label><input type="number" name="min_amount" class="form-control" value="${getValue('min_amount')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Max Amount</label><input type="number" name="max_amount" class="form-control" value="${getValue('max_amount')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Min Tenure Months</label><input type="number" name="min_tenure_months" class="form-control" value="${getValue('min_tenure_months')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Max Tenure Months</label><input type="number" name="max_tenure_months" class="form-control" value="${getValue('max_tenure_months')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
-      `;
-    } else if (type === 'fd') {
-      html += `
-        <div style="margin-bottom:15px"><label class="form-label">Bank Name</label><input type="text" name="bank_name" class="form-control" value="${getValue('bank_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Scheme Name</label><input type="text" name="scheme_name" class="form-control" value="${getValue('scheme_name')}" required></div>
-        <div style="margin-bottom:15px"><label class="form-label">Interest Rate %</label><input type="number" step="0.01" name="interest_rate" class="form-control" value="${getValue('interest_rate')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Senior Citizen Rate %</label><input type="number" step="0.01" name="senior_citizen_rate" class="form-control" value="${getValue('senior_citizen_rate')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Min Deposit</label><input type="number" name="min_deposit" class="form-control" value="${getValue('min_deposit')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Max Deposit</label><input type="number" name="max_deposit" class="form-control" value="${getValue('max_deposit')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Min Tenure Days</label><input type="number" name="min_tenure_days" class="form-control" value="${getValue('min_tenure_days')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Max Tenure Days</label><input type="number" name="max_tenure_days" class="form-control" value="${getValue('max_tenure_days')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Compounding Frequency</label>
-          <select name="compounding_frequency" class="form-control" required>
-            <option value="Monthly" ${getValue('compounding_frequency') === 'Monthly' ? 'selected' : ''}>Monthly</option>
-            <option value="Quarterly" ${getValue('compounding_frequency') === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
-            <option value="Half-Yearly" ${getValue('compounding_frequency') === 'Half-Yearly' ? 'selected' : ''}>Half-Yearly</option>
-            <option value="Yearly" ${getValue('compounding_frequency') === 'Yearly' ? 'selected' : ''}>Yearly</option>
-          </select>
-        </div>
-        <div style="margin-bottom:15px"><label class="form-label">Rating</label><input type="number" step="0.1" min="0" max="5" name="rating" class="form-control" value="${getValue('rating')}"></div>
-        <div style="margin-bottom:15px"><label class="form-label">Apply URL</label><input type="url" name="apply_url" class="form-control" value="${getValue('apply_url')}"></div>
-      `;
-    }
-
-    modalFields.innerHTML = html;
+    document.getElementById('modalFields').innerHTML = html;
     document.getElementById('addModal').classList.add('open');
   }
 
@@ -358,23 +591,10 @@
     e.preventDefault();
     const formData = new FormData(e.target);
     const body = {};
-    for (let [key, value] of formData.entries()) {
-      body[key] = value;
-    }
-    
-    if (currentModalType === 'card') {
-      body.is_active = formData.has('is_active');
-    }
-
-    let url = '';
-    if (currentModalType === 'card') url = '/api/credit-cards';
-    else if (currentModalType === 'loan') url = '/api/loans';
-    else if (currentModalType === 'fd') url = '/api/fds';
-
-    if (currentEditId) {
-      url += `/${currentEditId}`;
-    }
-
+    for (let [key, value] of formData.entries()) body[key] = value;
+    if (currentModalType === 'card') body.is_active = formData.has('is_active');
+    let url = currentModalType === 'card' ? '/api/credit-cards' : currentModalType === 'loan' ? '/api/loans' : '/api/fds';
+    if (currentEditId) url += `/${currentEditId}`;
     try {
       const res = currentEditId ? await FinAPI.put(url, body) : await FinAPI.post(url, body);
       if (res && res.success) {
@@ -387,10 +607,105 @@
       } else {
         FinAPI.toast('Failed to save', 'error');
       }
-    } catch (err) {
-      FinAPI.toast('Failed to save', 'error');
-    }
+    } catch { FinAPI.toast('Failed to save', 'error'); }
   });
+
+  // ── SCRAPER CENTER ──
+  async function loadScraperStats() {
+    const d = await FinAPI.get('/api/admin/dashboard').catch(() => null);
+    if (d && d.success && d.data) {
+      document.getElementById('scCC').textContent   = d.data.credit_cards   ?? '—';
+      document.getElementById('scLoan').textContent = d.data.loans          ?? '—';
+      document.getElementById('scFD').textContent   = d.data.fixed_deposits ?? '—';
+    }
+  }
+
+  async function loadScraperLogs() {
+    const d = await FinAPI.get('/api/admin/scraper-logs').catch(() => null);
+    const termBody = document.getElementById('terminalBody');
+    if (!d || !d.success || !d.data || !d.data.length) {
+      termBody.innerHTML = `<div class="log-row"><span class="log-time">[system]</span><span class="log-info">No scraper runs recorded yet. Hit ▶ Run Scraper Now.</span></div>`;
+      return;
+    }
+    const rows = d.data;
+    const lastSuccess = rows.find(r => r.status === 'success' && r.section === 'all');
+    if (lastSuccess) document.getElementById('scLastRun').textContent = fmtDate(lastSuccess.run_at);
+
+    termBody.innerHTML = rows.map(r => {
+      const cls = r.status === 'success' ? 'log-success' : r.status === 'failed' ? 'log-error' : 'log-info';
+      const icon = r.status === 'success' ? '✓' : r.status === 'failed' ? '✗' : '~';
+      return `<div class="log-row">
+        <span class="log-time">[${fmtDate(r.run_at)}]</span>
+        <span class="${cls}">${icon} ${r.section} · ${r.records_updated} records ${r.status}</span>
+        ${r.error_message ? `<span class="log-error"> ERR: ${r.error_message.substring(0,50)}…</span>` : ''}
+      </div>`;
+    }).join('');
+    termBody.scrollTop = termBody.scrollHeight;
+  }
+
+  async function triggerScraper() {
+    const btn = document.getElementById('runScraperBtn');
+    const banner = document.getElementById('scraperResultBanner');
+    btn.disabled = true;
+    btn.textContent = '⏳ Running…';
+    btn.classList.remove('pulse-active');
+    banner.style.display = 'none';
+    banner.className = 'scraper-banner';
+
+    try {
+      const res = await fetch('/api/admin/run-update');
+      const data = await res.json();
+      if (data.success) {
+        const total = data.total_records || data.sections_updated?.reduce((s,r) => s + (r.recordsUpdated||0), 0) || 0;
+        banner.className = 'scraper-banner banner-success';
+        banner.style.display = 'block';
+        banner.innerHTML = `
+          <div style="font-weight:700;font-size:1rem;color:#065F46;margin-bottom:12px;">✅ Scraper completed successfully!</div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            ${(data.sections_updated||[]).map(s => `
+              <div style="text-align:center;">
+                <div style="font-size:1.5rem;font-weight:800;color:#059669;">${s.recordsUpdated}</div>
+                <div style="font-size:0.75rem;color:#064E3B;text-transform:capitalize;">${sectionIcon(s.section)} ${s.section.replace('_',' ')}</div>
+                <div>${statusBadge(s.status)}</div>
+              </div>`).join('')}
+            <div style="text-align:center;border-left:1px solid #A7F3D0;padding-left:24px;">
+              <div style="font-size:1.5rem;font-weight:800;color:#059669;">${total}</div>
+              <div style="font-size:0.75rem;color:#064E3B;">Total Records</div>
+              <div style="font-size:0.75rem;color:#064E3B;">${data.elapsed_seconds}s elapsed</div>
+            </div>
+          </div>`;
+      } else {
+        banner.className = 'scraper-banner banner-error';
+        banner.style.display = 'block';
+        banner.innerHTML = `<div style="color:#DC2626;font-weight:600;">❌ Scraper failed: ${data.message || 'Unknown error'}</div>`;
+      }
+      loadScraperStats(); loadScraperLogs();
+    } catch (err) {
+      banner.className = 'scraper-banner banner-error';
+      banner.style.display = 'block';
+      banner.innerHTML = `<div style="color:#DC2626;">❌ Network error: ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '▶ Run Scraper Now';
+      btn.classList.add('pulse-active');
+      setTimeout(() => btn.classList.remove('pulse-active'), 4000);
+    }
+  }
+
+  function statusBadge(s) {
+    const cfg = { success:['#DCFCE7','#15803D','✅'], partial:['#FEF3C7','#92400E','⚠️'], failed:['#FEE2E2','#DC2626','❌'] };
+    const [bg, col, icon] = cfg[s] || ['#F1F5F9','#64748B','❓'];
+    return `<span style="background:${bg};color:${col};padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:700;">${icon} ${s}</span>`;
+  }
+
+  function sectionIcon(s) {
+    return { credit_cards:'💳', loans:'🏠', fixed_deposits:'📈', all:'🔄' }[s] || '📌';
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
 
   function logout() {
     localStorage.removeItem('fg_token');

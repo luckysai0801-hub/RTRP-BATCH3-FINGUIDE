@@ -60,7 +60,7 @@ window.FinAPI = (() => {
                     <button onclick="localStorage.removeItem('fg_token');localStorage.removeItem('fg_admin');location.href='/'" class="btn btn-primary">Logout</button>
                 `;
             } else {
-                el.innerHTML = `<a href="/admin-login.html" class="btn btn-outline">Admin Login</a>`;
+                el.innerHTML = ``;
             }
         },
     };

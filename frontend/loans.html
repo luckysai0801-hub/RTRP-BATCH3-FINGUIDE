@@ -1,17 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Loans – FIN GUIDE</title>
-  <meta name="description" content="Compare personal, home, car, education, and business loans from India's top banks. EMI calculator included."/>
-  <link rel="stylesheet" href="css/main.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loans – FinGuide | Compare Home, Personal &amp; Car Loans From India's Best Banks</title>
+  <meta name="description" content="Compare personal, home, car, education, and business loans from India's top banks. EMI calculator included.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+<style>
+/* ── Page-specific ───────────────────────────────────── */
+.skeleton-card{border-radius:var(--r-lg,12px);background:var(--card,#fff);border:1px solid var(--border,#e5e7eb);overflow:hidden;height:260px;position:relative}
+.skeleton-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.6) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sk-bar{background:var(--border,#e5e7eb);border-radius:4px;margin:12px 16px}
+
+/* Interest rate range display */
+.rate-range-display{
+  text-align:center;
+  font-size:.9rem;font-weight:600;
+  color:var(--indigo);
+  padding:6px 0 2px;
+}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px;flex-wrap:wrap}
+.pg-btn{padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:.85rem;font-weight:500;transition:.15s;color:var(--text)}
+.pg-btn:hover:not(:disabled){border-color:var(--indigo);color:var(--indigo)}
+.pg-btn.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* EMI Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.emi-modal{background:var(--card,#fff);border-radius:16px;padding:28px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative}
+.emi-modal h3{margin-bottom:20px;font-size:1.2rem;color:var(--text)}
+.emi-result-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px}
+.emi-result-item{background:hsl(243,75%,97%);border-radius:10px;padding:14px;text-align:center}
+.emi-result-val{font-size:1.1rem;font-weight:700;color:var(--indigo)}
+.emi-result-lbl{font-size:.72rem;color:var(--muted);margin-top:4px}
+.close-modal{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1}
+.close-modal:hover{color:var(--text)}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .emoji{font-size:2.5rem;margin-bottom:12px}
+</style>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="nav-container">
-    <a href="/" class="logo">FIN<span>GUIDE</span></a>
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="/" class="logo">Fin<span>Guide</span></a>
     <ul class="nav-links" id="navLinks">
       <li><a href="/credit-cards.html">Credit Cards</a></li>
       <li><a href="/loans.html" class="active">Loans</a></li>
@@ -19,147 +59,213 @@
       <li><a href="/recommendations.html">AI Picks</a></li>
     </ul>
     <div class="nav-actions" id="navActions">
-      <a href="/admin-login.html" class="btn btn-secondary btn-sm">Admin Login</a>
+      <a href="/admin-login.html" class="btn btn-outline btn-sm">Admin</a>
     </div>
-    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
   </div>
 </nav>
 
 <div class="page-header">
   <div class="container">
-    <span class="section-eyebrow">Browse &amp; Compare</span>
-    <h1>🏠 Loan Comparison</h1>
+    <span class="eyebrow">Browse &amp; Compare</span>
+    <h1>Loan Comparison</h1>
     <p>Best personal, home, car &amp; education loans — sorted by lowest interest rate</p>
   </div>
 </div>
 
-<section style="padding:32px 0 80px;">
+<section style="padding:32px 0 60px">
   <div class="container">
+    <div class="sidebar-layout">
 
-    <!-- Inline EMI Calculator with range sliders -->
-    <div class="calculator-card" id="emi-calculator">
-      <h2>🔢 EMI Calculator</h2>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:16px;">
-        <div class="form-group">
-          <label>Principal Amount</label>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <span style="font-size:.82rem;color:var(--text-muted);">₹1,000</span>
-            <strong id="emiPrincipalDisplay" style="color:var(--accent);">₹5,00,000</strong>
-            <span style="font-size:.82rem;color:var(--text-muted);">₹1 Cr</span>
-          </div>
-          <input type="range" id="emiPrincipalSlider" min="1000" max="10000000" value="500000" step="10000"/>
-          <input type="number" id="emiPrincipal" value="500000" min="1000" step="10000" style="height:36px;font-size:.85rem;margin-top:8px;"/>
-        </div>
-        <div class="form-group">
-          <label>Interest Rate (% p.a.)</label>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <span style="font-size:.82rem;color:var(--text-muted);">1%</span>
-            <strong id="emiRateDisplay" style="color:var(--accent);">10.5%</strong>
-            <span style="font-size:.82rem;color:var(--text-muted);">40%</span>
-          </div>
-          <input type="range" id="emiRateSlider" min="1" max="40" value="10.5" step="0.05"/>
-          <input type="number" id="emiRate" value="10.5" min="1" max="40" step="0.05" style="height:36px;font-size:.85rem;margin-top:8px;"/>
-        </div>
-        <div class="form-group">
-          <label>Tenure (months)</label>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-            <span style="font-size:.82rem;color:var(--text-muted);">1 mo</span>
-            <strong id="emiTenureDisplay" style="color:var(--accent);">36 mo</strong>
-            <span style="font-size:.82rem;color:var(--text-muted);">360 mo</span>
-          </div>
-          <input type="range" id="emiTenureSlider" min="1" max="360" value="36"/>
-          <input type="number" id="emiTenure" value="36" min="1" max="360" style="height:36px;font-size:.85rem;margin-top:8px;"/>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="calcEMI">Calculate EMI</button>
-      <div id="emiResult" style="display:none;margin-top:24px;">
-        <div class="calc-results-grid">
-          <div class="calc-result-item primary">
-            <div class="calc-result-val" id="resEMI">-</div>
-            <div class="calc-result-label">Monthly EMI</div>
-          </div>
-          <div class="calc-result-item success">
-            <div class="calc-result-val" id="resTotalInterest">-</div>
-            <div class="calc-result-label">Total Interest</div>
-          </div>
-          <div class="calc-result-item warning">
-            <div class="calc-result-val" id="resTotalPayment">-</div>
-            <div class="calc-result-label">Total Payment</div>
-          </div>
-        </div>
-        <div style="overflow-x:auto;margin-top:20px;">
-          <table class="data-table" id="emiSchedule">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th>EMI</th>
-                <th>Principal</th>
-                <th>Interest</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody id="scheduleBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      <!-- ── LEFT: Filters + EMI Calculator ──────────────────── -->
+      <aside class="sidebar">
 
-    <!-- Filters -->
-    <div class="filters-bar">
-      <div>
-        <label>Loan Type</label>
-        <select id="filterLoanType">
-          <option value="">All Types</option>
-          <option value="personal">Personal</option>
-          <option value="home">Home</option>
-          <option value="car">Car</option>
-          <option value="education">Education</option>
-          <option value="business">Business</option>
-        </select>
-      </div>
-      <div>
-        <label>Max Interest Rate</label>
-        <select id="filterMaxRate">
-          <option value="">Any Rate</option>
-          <option value="8.5">Under 8.5%</option>
-          <option value="9">Under 9%</option>
-          <option value="10">Under 10%</option>
-          <option value="12">Under 12%</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" id="applyFilters">Filter</button>
-      <button class="btn btn-secondary" id="clearFilters">Clear</button>
-    </div>
+        <!-- Sidebar EMI Calculator -->
+        <div class="panel" id="emi-calculator">
+          <h3>🔢 EMI Calculator</h3>
 
-    <!-- Sort bar -->
-    <div class="sort-bar">
-      <span class="count" id="resultsInfo">Loading loans…</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <label style="font-size:.82rem;color:var(--text-muted);">Sort by</label>
-        <select id="sortBy">
-          <option value="rate">Lowest Rate</option>
-          <option value="rating">Highest Rating</option>
-          <option value="fee">Lowest Fee</option>
-        </select>
-      </div>
-    </div>
+          <div class="range-track">
+            <div class="range-row">
+              <span class="range-label">Principal Amount</span>
+              <span class="range-val" id="emiPrincipalDisplay">₹5,00,000</span>
+            </div>
+            <input type="range" id="emiPrincipalSlider" min="10000" max="10000000" value="500000" step="10000">
+            <div class="range-hints"><span>₹10K</span><span>₹1 Cr</span></div>
+            <input type="number" class="input" id="emiPrincipal" value="500000" min="10000" step="10000" style="margin-top:6px">
+          </div>
 
-    <div id="loansGrid" class="product-grid">
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
+          <div class="range-track">
+            <div class="range-row">
+              <span class="range-label">Interest Rate (% p.a.)</span>
+              <span class="range-val" id="emiRateDisplay">10.5%</span>
+            </div>
+            <input type="range" id="emiRateSlider" min="1" max="40" value="10.5" step="0.05">
+            <div class="range-hints"><span>1%</span><span>40%</span></div>
+            <input type="number" class="input" id="emiRate" value="10.5" min="1" max="40" step="0.05" style="margin-top:6px">
+          </div>
+
+          <div class="range-track">
+            <div class="range-row">
+              <span class="range-label">Tenure (months)</span>
+              <span class="range-val" id="emiTenureDisplay">36 mo</span>
+            </div>
+            <input type="range" id="emiTenureSlider" min="1" max="360" value="36">
+            <div class="range-hints"><span>1 mo</span><span>360 mo</span></div>
+            <input type="number" class="input" id="emiTenure" value="36" min="1" max="360" style="margin-top:6px">
+          </div>
+
+          <button class="btn btn-indigo btn-full" id="calcEMI" style="margin-top:8px">Calculate EMI</button>
+
+          <div id="emiResult" style="display:none;margin-top:16px">
+            <div class="result-box">
+              <div class="result-item">
+                <div class="result-val" id="resEMI">-</div>
+                <div class="result-lbl">Monthly EMI</div>
+              </div>
+              <div class="result-item">
+                <div class="result-val" id="resTotalInterest" style="color:var(--orange)">-</div>
+                <div class="result-lbl">Total Interest</div>
+              </div>
+              <div class="result-item">
+                <div class="result-val" id="resTotalPayment" style="color:var(--success)">-</div>
+                <div class="result-lbl">Total Payment</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="panel">
+          <h3>🔍 Filters</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="searchInput">Search</label>
+            <input type="text" class="input" id="searchInput" placeholder="Bank or loan name…" autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Interest Rate Range</label>
+            <div class="rate-range-display" id="rateRangeDisplay">8% — 30%</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input type="number" class="input" id="minRate" placeholder="Min %" min="0" max="40" step="0.5" style="flex:1">
+              <input type="number" class="input" id="maxRate" placeholder="Max %" min="0" max="40" step="0.5" style="flex:1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterLoanType">Loan Type</label>
+            <select class="select" id="filterLoanType">
+              <option value="">All Types</option>
+              <option value="personal">Personal</option>
+              <option value="home">Home</option>
+              <option value="car">Car</option>
+              <option value="education">Education</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterMaxAmount">Max Loan Amount</label>
+            <select class="select" id="filterMaxAmount">
+              <option value="">Any Amount</option>
+              <option value="500000">Up to ₹5 Lakh</option>
+              <option value="1000000">Up to ₹10 Lakh</option>
+              <option value="2500000">Up to ₹25 Lakh</option>
+              <option value="5000000">Up to ₹50 Lakh</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="sortBy">Sort By</label>
+            <select class="select" id="sortBy">
+              <option value="rate_asc">Lowest Rate</option>
+              <option value="rate_desc">Highest Rate</option>
+              <option value="amount_desc">Highest Amount</option>
+              <option value="name_asc">A → Z</option>
+            </select>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-indigo btn-full" id="applyFiltersBtn">Apply</button>
+            <button class="btn btn-outline btn-full" id="clearFiltersBtn">Clear All</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── RIGHT: Loan Cards ─────────────────────────────── -->
+      <div class="main-col">
+        <div class="sort-bar">
+          <span class="result-count" id="resultsInfo">Loading loans…</span>
+          <div class="sort-bar-right">
+            <label>Per page</label>
+            <select class="select" id="limitSelect" style="width:80px">
+              <option value="12">12</option>
+              <option value="24">24</option>
+              <option value="48">48</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="product-grid" id="loansGrid">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+      </div>
     </div>
   </div>
 </section>
 
-<button class="chat-toggle" id="chatToggle">💬</button>
-<div class="chat-bubble" id="chatBubble" hidden>
-  <div class="chat-header"><span>🤖 FinBot</span><button id="chatClose">&times;</button></div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="msg bot">Ask about loans!</div>
+<!-- ── EMI Modal (from "EMI Calculator" button on card) ─────── -->
+<div class="modal-overlay" id="emiModal">
+  <div class="emi-modal">
+    <button class="close-modal" id="closeEmiModal" aria-label="Close">×</button>
+    <h3>🔢 EMI Calculator — <span id="modalLoanName">Loan</span></h3>
+
+    <div class="form-group">
+      <label class="form-label" for="modalPrincipal">Loan Amount (₹)</label>
+      <input type="number" class="input" id="modalPrincipal" min="10000" step="10000">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="modalRate">Interest Rate (% p.a.)</label>
+      <input type="number" class="input" id="modalRate" min="1" max="40" step="0.05">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tenure: <span id="modalTenureDisplay" style="color:var(--indigo);font-weight:600">36 months</span></label>
+      <input type="range" id="modalTenureSlider" min="12" max="84" value="36" step="1" style="width:100%">
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:4px"><span>12 mo</span><span>84 mo</span></div>
+    </div>
+
+    <div class="emi-result-grid" id="modalEmiResults" style="display:none">
+      <div class="emi-result-item">
+        <div class="emi-result-val" id="modalResEMI">—</div>
+        <div class="emi-result-lbl">Monthly EMI</div>
+      </div>
+      <div class="emi-result-item">
+        <div class="emi-result-val" id="modalResTotal" style="color:var(--success)">—</div>
+        <div class="emi-result-lbl">Total Amount</div>
+      </div>
+      <div class="emi-result-item">
+        <div class="emi-result-val" id="modalResInterest" style="color:var(--orange)">—</div>
+        <div class="emi-result-lbl">Total Interest</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;color:.8rem;color:var(--muted);font-size:.78rem">
+      Formula: P×r×(1+r)ⁿ / ((1+r)ⁿ−1) &nbsp;|&nbsp; r = monthly rate
+    </div>
   </div>
+</div>
+
+<!-- Chatbot -->
+<button class="chat-toggle" id="chatToggle">💬</button>
+<div class="chat-bubble" id="chatBubble" hidden="">
+  <div class="chat-header"><span>🤖 FinBot</span><button id="chatClose">×</button></div>
+  <div class="chat-messages" id="chatMessages"><div class="msg bot">Ask about loans!</div></div>
   <div class="chat-input-row">
-    <input id="chatInput" type="text" placeholder="EMI calculation?"/>
+    <input id="chatInput" type="text" placeholder="EMI calculation?">
     <button id="chatSend">Send</button>
   </div>
 </div>
@@ -168,7 +274,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="/" class="logo">FIN<span>GUIDE</span></a>
+        <a href="/" class="footer-logo">Fin<span>Guide</span></a>
         <p>India's smart financial comparison platform.</p>
       </div>
       <div>
@@ -180,122 +286,293 @@
         </ul>
       </div>
       <div><h4>Tools</h4><ul><li><a href="/recommendations.html">AI Picks</a></li></ul></div>
-      <div><h4>Account</h4><ul><li><a href="/login.html">Login</a></li></ul></div>
+      <div><h4>Account</h4><ul><li><a href="/admin-login.html" style="opacity:.5;font-size:.82rem">Admin</a></li></ul></div>
     </div>
-    <div class="footer-bottom"><p>© 2025 FIN GUIDE. Data for informational purposes.</p></div>
+    <div class="footer-bottom"><p>© 2025 FinGuide. Data for informational purposes.</p></div>
   </div>
 </footer>
 
+<div class="toast-container" id="toastContainer"></div>
 <script src="js/api.js"></script>
 <script src="js/chat.js"></script>
 <script>
-  FinAPI.renderNav('navActions');
-  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+/* ═══════════════════════════════════════════════════════════
+   LOANS PAGE – vanilla JS
+   API endpoint: GET /api/loans
+═══════════════════════════════════════════════════════════ */
 
-  // Range slider sync
-  function syncSlider(sliderId, inputId, displayId, formatter) {
-    const slider = document.getElementById(sliderId);
-    const input = document.getElementById(inputId);
-    const display = document.getElementById(displayId);
-    slider.addEventListener('input', () => {
-      input.value = slider.value;
-      display.textContent = formatter(slider.value);
-    });
-    input.addEventListener('input', () => {
-      slider.value = input.value;
-      display.textContent = formatter(input.value);
-    });
-  }
-  const fmtCurr = v => '₹' + Number(v).toLocaleString('en-IN');
-  const fmtPct = v => Number(v).toFixed(1) + '%';
-  const fmtMo = v => v + ' mo';
-  syncSlider('emiPrincipalSlider','emiPrincipal','emiPrincipalDisplay', fmtCurr);
-  syncSlider('emiRateSlider','emiRate','emiRateDisplay', fmtPct);
-  syncSlider('emiTenureSlider','emiTenure','emiTenureDisplay', fmtMo);
+// ── Navbar ──────────────────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
+document.getElementById('hamburger').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('open'));
+if (window.FinAPI && FinAPI.renderNav) FinAPI.renderNav('navActions');
 
-  async function loadLoans() {
-    const type = document.getElementById('filterLoanType').value;
-    const maxRate = document.getElementById('filterMaxRate').value;
-    const sort = document.getElementById('sortBy').value;
-    const params = new URLSearchParams({ sort, limit: 60 });
-    if (type) params.set('loan_type', type);
-    if (maxRate) params.set('max_rate', maxRate);
+// ── State ────────────────────────────────────────────────────────────
+const filters = {
+  search: '', minRate: '', maxRate: '',
+  maxAmount: '', loanType: '',
+  sortBy: 'rate_asc', page: 1, limit: 12,
+};
+let allLoans = [];
 
-    document.getElementById('loansGrid').innerHTML = '<div class="skeleton-card"></div>'.repeat(6);
-    const data = await FinAPI.get(`/api/loans?${params}`);
-    if (!data.success) return;
-    const loans = data.data;
-    document.getElementById('resultsInfo').textContent = `Showing ${loans.length} loan products`;
+// ── Reveal observer ──────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.08 });
 
-    if (!loans.length) {
-      document.getElementById('loansGrid').innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px;">No loans found.</p>';
-      return;
-    }
-    document.getElementById('loansGrid').innerHTML = loans.map(l => {
-      const bankName = l.bank_name || l.bank?.name || '';
-      // eligibility pills
-      const pills = [];
-      if (l.loan_type) pills.push(`<span class="badge badge-general">${l.loan_type.toUpperCase()}</span>`);
-      if (l.min_income) pills.push(`<span class="chip chip-blue" style="font-size:.7rem;">Min ₹${l.min_income.toLocaleString('en-IN')}</span>`);
-      return `
-  <div class="product-card">
-    <div class="product-card-top">
-      ${pills.join('')}
-    </div>
-    <h3 style="margin-top:10px;">${l.loan_name}</h3>
-    <p class="bank-name">${bankName}</p>
-    <div class="product-meta">
-      <span>Rate: <strong style="color:var(--success);">${l.interest_rate}% p.a.</strong></span>
-      <span>Processing Fee: <strong>${l.processing_fee}%</strong></span>
-      <span>Amount: <strong>₹${(l.min_amount/100000).toFixed(1)}L – ₹${(l.max_amount/100000).toFixed(l.max_amount>=10000000?0:1)}L</strong></span>
-      <span>Tenure: <strong>${l.min_tenure} – ${l.max_tenure} months</strong></span>
-      <span>Rating: <strong>⭐ ${l.rating}</strong></span>
-    </div>
-    <div style="margin-bottom:12px;">
-      ${(l.features||[]).slice(0,2).map(f => `<div style="font-size:.78rem;color:var(--text-muted);padding:2px 0;">• ${f}</div>`).join('')}
-    </div>
-    <div class="product-card-actions">
-      <a href="${l.apply_url||'#'}" target="_blank" class="btn btn-primary btn-sm">Apply Now</a>
-      <button onclick="prefillEMI(${l.interest_rate})" class="btn btn-secondary btn-sm">Calc EMI</button>
-    </div>
-  </div>`;
-    }).join('');
-  }
+// ── Helpers ──────────────────────────────────────────────────────────
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function fmtINR(n) { if (!n && n !== 0) return '—'; return '₹' + Number(n).toLocaleString('en-IN'); }
+function fmtL(n) {
+  if (!n) return '—';
+  const crore = 10000000, lakh = 100000;
+  if (n >= crore) return '₹' + (n/crore).toFixed(n%crore===0?0:1) + ' Cr';
+  return '₹' + (n/lakh).toFixed(n%lakh===0?0:1) + ' L';
+}
 
-  function prefillEMI(rate) {
-    document.getElementById('emiRate').value = rate;
-    document.getElementById('emiRateSlider').value = rate;
-    document.getElementById('emiRateDisplay').textContent = rate + '%';
-    document.getElementById('emi-calculator').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('calcEMI').click();
-  }
+function skeletonHTML(n=6) {
+  return Array.from({length:n}, () =>
+    `<div class="skeleton-card"><div class="sk-bar" style="height:16px;width:60%"></div><div class="sk-bar" style="height:12px;width:35%"></div><div class="sk-bar" style="height:36px;width:50%;margin-top:20px"></div><div class="sk-bar" style="height:12px;width:80%"></div><div class="sk-bar" style="height:12px;width:70%"></div></div>`
+  ).join('');
+}
 
-  document.getElementById('calcEMI').addEventListener('click', async () => {
-    const p = document.getElementById('emiPrincipal').value;
-    const r = document.getElementById('emiRate').value;
-    const n = document.getElementById('emiTenure').value;
-    const data = await FinAPI.get(`/api/loans/emi?principal=${p}&rate=${r}&tenure=${n}`);
-    if (!data.success) { FinAPI.toast(data.message, 'error'); return; }
-    const { emi, totalInterest, totalPayment, schedule } = data.data;
-    document.getElementById('resEMI').textContent = '₹' + emi.toLocaleString('en-IN');
-    document.getElementById('resTotalInterest').textContent = '₹' + totalInterest.toLocaleString('en-IN');
-    document.getElementById('resTotalPayment').textContent = '₹' + totalPayment.toLocaleString('en-IN');
-    document.getElementById('scheduleBody').innerHTML = (schedule||[]).map(row =>
-      `<tr><td>${row.month}</td><td>₹${row.emi.toLocaleString('en-IN')}</td><td>₹${row.principal.toLocaleString('en-IN')}</td><td>₹${row.interest.toLocaleString('en-IN')}</td><td>₹${row.balance.toLocaleString('en-IN')}</td></tr>`
-    ).join('');
-    document.getElementById('emiResult').style.display = 'block';
+// ── Sidebar EMI Calculator slider sync ───────────────────────────────
+function syncSlider(sliderId, inputId, displayId, fmt) {
+  const sl  = document.getElementById(sliderId);
+  const inp = document.getElementById(inputId);
+  const dis = document.getElementById(displayId);
+  sl.addEventListener('input',  () => { inp.value = sl.value;  dis.textContent = fmt(sl.value); recalcEMI(); });
+  inp.addEventListener('input', () => { sl.value  = inp.value; dis.textContent = fmt(inp.value); recalcEMI(); });
+}
+syncSlider('emiPrincipalSlider', 'emiPrincipal', 'emiPrincipalDisplay', v => '₹'+Number(v).toLocaleString('en-IN'));
+syncSlider('emiRateSlider',      'emiRate',      'emiRateDisplay',      v => Number(v).toFixed(1)+'%');
+syncSlider('emiTenureSlider',    'emiTenure',    'emiTenureDisplay',    v => v+' mo');
+
+function calcEMILocal(P, rAnnual, nMonths) {
+  const r = rAnnual / 12 / 100;
+  if (r === 0) return { emi: P/nMonths, total: P, interest: 0 };
+  const emi = P * r * Math.pow(1+r, nMonths) / (Math.pow(1+r, nMonths) - 1);
+  const total = emi * nMonths;
+  return { emi: Math.round(emi), total: Math.round(total), interest: Math.round(total - P) };
+}
+
+function animNum(el, end) {
+  const start = performance.now(), from = 0, dur = 450;
+  const step = ts => {
+    const p = Math.min((ts - start) / dur, 1), e = 1 - Math.pow(1-p, 3);
+    el.textContent = '₹' + Math.round(from + (end - from) * e).toLocaleString('en-IN');
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function recalcEMI() {
+  const P = parseFloat(document.getElementById('emiPrincipal').value) || 0;
+  const r = parseFloat(document.getElementById('emiRate').value) || 0;
+  const n = parseInt(document.getElementById('emiTenure').value) || 0;
+  if (!P || !r || !n) return;
+  const { emi, total, interest } = calcEMILocal(P, r, n);
+  document.getElementById('emiResult').style.display = 'block';
+  animNum(document.getElementById('resEMI'), emi);
+  animNum(document.getElementById('resTotalInterest'), interest);
+  animNum(document.getElementById('resTotalPayment'), total);
+}
+document.getElementById('calcEMI').addEventListener('click', recalcEMI);
+
+// ── EMI Modal ────────────────────────────────────────────────────────
+let modalRecalcTimer;
+function openEmiModal(loan) {
+  document.getElementById('modalLoanName').textContent = loan.loan_name || 'Loan';
+  document.getElementById('modalPrincipal').value = loan.max_amount || 500000;
+  document.getElementById('modalRate').value      = loan.interest_rate || 10.5;
+  document.getElementById('modalTenureSlider').value = 36;
+  document.getElementById('modalTenureDisplay').textContent = '36 months';
+  document.getElementById('emiModal').classList.add('open');
+  recalcModalEMI();
+}
+function recalcModalEMI() {
+  const P = parseFloat(document.getElementById('modalPrincipal').value) || 0;
+  const r = parseFloat(document.getElementById('modalRate').value) || 0;
+  const n = parseInt(document.getElementById('modalTenureSlider').value) || 36;
+  if (!P || !r || !n) return;
+  const { emi, total, interest } = calcEMILocal(P, r, n);
+  document.getElementById('modalEmiResults').style.display = 'grid';
+  document.getElementById('modalResEMI').textContent      = fmtINR(emi);
+  document.getElementById('modalResTotal').textContent    = fmtINR(total);
+  document.getElementById('modalResInterest').textContent = fmtINR(interest);
+}
+document.getElementById('modalTenureSlider').addEventListener('input', function() {
+  document.getElementById('modalTenureDisplay').textContent = this.value + ' months';
+  recalcModalEMI();
+});
+['modalPrincipal','modalRate'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    clearTimeout(modalRecalcTimer);
+    modalRecalcTimer = setTimeout(recalcModalEMI, 300);
   });
+});
+document.getElementById('closeEmiModal').addEventListener('click', () => document.getElementById('emiModal').classList.remove('open'));
+document.getElementById('emiModal').addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
 
-  document.getElementById('applyFilters').addEventListener('click', loadLoans);
-  document.getElementById('sortBy').addEventListener('change', loadLoans);
-  document.getElementById('clearFilters').addEventListener('click', () => {
-    ['filterLoanType','filterMaxRate','sortBy'].forEach(id => document.getElementById(id).selectedIndex = 0);
-    loadLoans();
-  });
+// ── Rate range display update ─────────────────────────────────────────
+function updateRateDisplay() {
+  const mn = document.getElementById('minRate').value || '8';
+  const mx = document.getElementById('maxRate').value || '30';
+  document.getElementById('rateRangeDisplay').textContent = `${mn}% — ${mx}%`;
+}
+document.getElementById('minRate').addEventListener('input', updateRateDisplay);
+document.getElementById('maxRate').addEventListener('input', updateRateDisplay);
 
-  const urlParams = new URLSearchParams(location.search);
-  if (urlParams.get('loan_type')) document.getElementById('filterLoanType').value = urlParams.get('loan_type');
-  loadLoans();
+// ── Fetch & render loans ─────────────────────────────────────────────
+async function fetchLoans() {
+  const grid = document.getElementById('loansGrid');
+  grid.innerHTML = skeletonHTML(filters.limit);
+  document.getElementById('pagination').innerHTML = '';
+
+  const params = new URLSearchParams({ page: filters.page, limit: filters.limit, sortBy: filters.sortBy });
+  if (filters.search)    params.set('search', filters.search);
+  if (filters.minRate)   params.set('minRate', filters.minRate);
+  if (filters.maxRate)   params.set('maxRate', filters.maxRate);
+  if (filters.maxAmount) params.set('maxAmount', filters.maxAmount);
+  if (filters.loanType)  params.set('loanType', filters.loanType);
+
+  try {
+    const res  = await fetch(`/api/loans?${params}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'API error');
+
+    allLoans = data.data;
+    const total = data.total || 0;
+    const start = (filters.page - 1) * filters.limit + 1;
+    const end   = Math.min(filters.page * filters.limit, total);
+    document.getElementById('resultsInfo').textContent =
+      total ? `Showing ${start}–${end} of ${total} loan products` : '0 loans found';
+
+    renderLoans(allLoans);
+    renderPagination(data.page, data.totalPages);
+  } catch (err) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="emoji">⚠️</div>
+      <p style="margin-bottom:16px">Failed to load data. Please try again.</p>
+      <button class="btn btn-indigo" onclick="fetchLoans()">Retry</button>
+    </div>`;
+    console.error('[loans]', err);
+  }
+}
+
+function renderLoans(loans) {
+  const g = document.getElementById('loansGrid');
+  if (!loans.length) {
+    g.innerHTML = `<div class="empty-state">
+      <div class="emoji">🔍</div>
+      <p>No loans match your filters.</p>
+      <button class="btn btn-outline" style="margin-top:16px" onclick="clearFilters()">Clear Filters</button>
+    </div>`;
+    return;
+  }
+  g.innerHTML = loans.map((l, i) => {
+    const bankName = l.bank_name || l.bank?.name || '';
+    const lType = (l.loan_type || 'general').toLowerCase();
+    const initial = bankName.charAt(0).toUpperCase() || 'B';
+    return `
+    <div class="product-card reveal" style="transition-delay:${(i%3)*0.08}s">
+      <div class="pc-top">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--indigo),#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0">${initial}</div>
+          <div>
+            <h3 style="margin:0;font-size:.95rem;line-height:1.2">${l.loan_name}</h3>
+            <p class="bank-name" style="margin:0;font-size:.78rem">${bankName}</p>
+          </div>
+        </div>
+        ${l.loan_type ? `<span class="tag tag-${lType}">${l.loan_type.toUpperCase()}</span>` : ''}
+      </div>
+      <div class="rate-big">${parseFloat(l.interest_rate).toFixed(2)}%</div>
+      <div class="rate-lbl">per annum · Processing: ${l.processing_fee || 0}%</div>
+      <div class="product-meta">
+        <span>Amount: <strong>${fmtL(l.min_amount)} – ${fmtL(l.max_amount)}</strong></span>
+        <span>Tenure: <strong>${l.min_tenure} – ${l.max_tenure} months</strong></span>
+        ${l.min_income ? `<span>Min Income: <strong>${fmtINR(l.min_income)}/mo</strong></span>` : ''}
+        <span>Rating: <strong>⭐ ${l.rating}</strong></span>
+      </div>
+      ${(l.features||[]).slice(0,2).map(f => `<div style="font-size:.75rem;color:var(--muted);padding:2px 0">• ${f}</div>`).join('')}
+      <div class="pc-actions">
+        <a href="${l.apply_url||'#'}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Apply Now</a>
+        <button onclick='openEmiModal(${JSON.stringify({loan_name:l.loan_name,interest_rate:l.interest_rate,max_amount:l.max_amount})})' class="btn btn-outline btn-sm">EMI Calc</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#loansGrid .reveal').forEach(el => obs.observe(el));
+}
+
+// ── Pagination ───────────────────────────────────────────────────────
+function renderPagination(current, total) {
+  const pag = document.getElementById('pagination');
+  if (!total || total <= 1) { pag.innerHTML = ''; return; }
+  const show = new Set([1, total, current, current-1, current+1].filter(p => p>=1 && p<=total));
+  const sorted = [...show].sort((a,b) => a-b);
+  let html = `<button class="pg-btn" ${current===1?'disabled':''} onclick="goPage(${current-1})">‹ Prev</button>`;
+  let prev = 0;
+  for (const p of sorted) {
+    if (prev && p - prev > 1) html += `<span class="pg-btn" style="cursor:default;border:none;color:var(--muted)">…</span>`;
+    html += `<button class="pg-btn ${p===current?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    prev = p;
+  }
+  html += `<button class="pg-btn" ${current===total?'disabled':''} onclick="goPage(${current+1})">Next ›</button>`;
+  pag.innerHTML = html;
+}
+function goPage(p) { filters.page = p; fetchLoans(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// ── Filter event bindings ────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', debounce(() => {
+  filters.search = document.getElementById('searchInput').value.trim();
+  filters.page = 1; fetchLoans();
+}, 400));
+
+document.getElementById('sortBy').addEventListener('change', function() {
+  filters.sortBy = this.value; filters.page = 1; fetchLoans();
+});
+document.getElementById('limitSelect').addEventListener('change', function() {
+  filters.limit = parseInt(this.value); filters.page = 1; fetchLoans();
+});
+document.getElementById('applyFiltersBtn').addEventListener('click', () => {
+  filters.minRate   = document.getElementById('minRate').value;
+  filters.maxRate   = document.getElementById('maxRate').value;
+  filters.maxAmount = document.getElementById('filterMaxAmount').value;
+  filters.loanType  = document.getElementById('filterLoanType').value;
+  filters.page = 1; fetchLoans();
+});
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('minRate').value = '';
+  document.getElementById('maxRate').value = '';
+  document.getElementById('filterLoanType').selectedIndex = 0;
+  document.getElementById('filterMaxAmount').selectedIndex = 0;
+  document.getElementById('sortBy').selectedIndex = 0;
+  document.getElementById('rateRangeDisplay').textContent = '8% — 30%';
+  Object.assign(filters, {search:'',minRate:'',maxRate:'',maxAmount:'',loanType:'',sortBy:'rate_asc',page:1});
+  fetchLoans();
+}
+document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+
+// ── Prefill sidebar EMI from card ─────────────────────────────────────
+function prefillEMI(rate) {
+  document.getElementById('emiRate').value = rate;
+  document.getElementById('emiRateSlider').value = rate;
+  document.getElementById('emiRateDisplay').textContent = rate + '%';
+  document.getElementById('emi-calculator').scrollIntoView({ behavior:'smooth', block:'start' });
+  setTimeout(recalcEMI, 600);
+}
+
+// ── URL params on load ───────────────────────────────────────────────
+const urlP = new URLSearchParams(location.search);
+if (urlP.get('loan_type')) {
+  filters.loanType = urlP.get('loan_type');
+  document.getElementById('filterLoanType').value = filters.loanType;
+}
+
+// ── Initial load ─────────────────────────────────────────────────────
+fetchLoans();
 </script>
 </body>
 </html>

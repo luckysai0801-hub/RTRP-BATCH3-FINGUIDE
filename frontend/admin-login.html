@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login – FIN GUIDE</title>
-  <link rel="stylesheet" href="css/main.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – FinGuide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+<style>
+.alert {
+  padding: 10px 14px;
+  border-radius: var(--r);
+  font-size: .875rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.alert-error { background: var(--danger-lt); color: var(--danger); border: 1px solid #FECACA; }
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </head>
-<body style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg);padding:40px 24px;">
+<body class="auth-page">
 
-  <div style="width:100%;max-width:400px;">
-
-    <!-- Admin portal label -->
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
-      <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--text);">
-        FIN<span style="color:var(--accent);">GUIDE</span>
-      </div>
-      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--danger);margin-top:6px;">
-        Admin Portal
-      </div>
-      <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Restricted access — authorized users only</p>
+  <div style="width:100%;max-width:420px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:28px">
+      <a href="/" class="logo" style="font-size:1.5rem;display:inline-block;margin-bottom:10px">Fin<span>Guide</span></a>
+      <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--danger);background:var(--danger-lt);display:inline-block;padding:3px 10px;border-radius:100px;margin-bottom:6px">Admin Portal</div>
+      <p style="font-size:.85rem;color:var(--muted)">Restricted access — authorized personnel only</p>
     </div>
 
-    <div style="background:white;border:var(--card-border);border-radius:16px;padding:32px;box-shadow:var(--shadow-md);">
-
-      <div id="loginError" style="display:none;" class="alert alert-error"></div>
+    <div class="auth-card">
+      <div id="loginError" style="display:none" class="alert alert-error"></div>
 
       <form id="loginForm">
         <div class="form-group">
-          <label for="adminEmail">Email Address</label>
-          <input type="email" id="adminEmail" placeholder="admin@finguide.com" required autocomplete="username"/>
+          <label class="form-label" for="adminEmail">Email Address</label>
+          <input type="email" class="input" id="adminEmail" placeholder="admin@finguide.com" required autocomplete="username">
         </div>
         <div class="form-group">
-          <label for="adminPassword">Password</label>
+          <label class="form-label" for="adminPassword">Password</label>
           <div class="password-wrap">
-            <input type="password" id="adminPassword" placeholder="Enter your password" required autocomplete="current-password" style="padding-right:44px;"/>
+            <input type="password" class="input" id="adminPassword" placeholder="Enter your password" required autocomplete="current-password">
             <button type="button" id="togglePwd" class="pwd-toggle">👁️</button>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-full" id="loginBtn" style="margin-top:8px;">
-          <span id="loginText">🔐 Sign In</span>
+        <button type="submit" class="btn btn-indigo btn-full" id="loginBtn" style="margin-top:8px">
+          <span id="loginText">Sign In to Admin</span>
           <span id="loginSpinner" class="spinner" hidden></span>
         </button>
       </form>
 
-      <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:var(--card-border);">
-        <a href="/" style="font-size:.82rem;color:var(--text-muted);">← Back to FIN GUIDE</a>
+      <div style="text-align:center;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)">
+        <a href="/" style="font-size:.82rem;color:var(--muted)">← Back to FinGuide</a>
       </div>
     </div>
 
-    <!-- Secure footer note -->
-    <p style="text-align:center;margin-top:16px;font-size:.72rem;color:var(--text-faint);line-height:1.6;">
-      Secure · Private network only<br/>
+    <p style="text-align:center;margin-top:14px;font-size:.72rem;color:var(--faint);line-height:1.6">
       🔒 Protected by JWT authentication. Sessions expire after 7 days.
     </p>
   </div>
@@ -59,18 +71,22 @@
   <script src="/js/api.js"></script>
   <script>
     if (localStorage.getItem('fg_token')) {
-      window.location.href = '/admin-dashboard.html';
+      const admin = JSON.parse(localStorage.getItem('fg_admin') || 'null');
+      if (admin && admin.role === 'admin') {
+        window.location.href = '/admin-dashboard.html';
+      } else {
+        localStorage.removeItem('fg_token');
+        localStorage.removeItem('fg_admin');
+      }
     }
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('loginBtn');
-      const errEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn'), errEl = document.getElementById('loginError');
       document.getElementById('loginText').style.display = 'none';
       document.getElementById('loginSpinner').hidden = false;
       btn.disabled = true;
       errEl.style.display = 'none';
-
       try {
         const data = await window.FinAPI.post('/api/auth/login', {
           email: document.getElementById('adminEmail').value.trim(),
@@ -80,12 +96,10 @@
           localStorage.setItem('fg_token', data.token);
           localStorage.setItem('fg_admin', JSON.stringify(data.admin));
           window.location.href = '/admin-dashboard.html';
-        } else {
-          throw new Error(data.message || 'Login failed');
-        }
+        } else throw new Error(data.message || 'Login failed');
       } catch (err) {
-        errEl.textContent = '❌ ' + (err.message || 'Invalid credentials. Please try again.');
-        errEl.style.display = 'flex';
+        errEl.textContent = err.message || 'Invalid credentials. Please try again.';
+        errEl.style.display = 'block';
         document.getElementById('loginText').style.display = 'inline';
         document.getElementById('loginSpinner').hidden = true;
         btn.disabled = false;

@@ -46,9 +46,14 @@ const FRONTEND = path.join(__dirname, '..', 'frontend');
 app.use(express.static(FRONTEND));
 
 // ── API Routes ────────────────────────────────────────────────────────────────
+// Unified data routes (filtering / pagination / stats) — registered FIRST so
+// GET /api/cards, /api/loans, /api/fds, /api/banks, /api/stats are handled here.
+app.use('/api', require('./routes/dataRoutes'));
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/banks', require('./routes/banks'));
 app.use('/api/credit-cards', require('./routes/creditCards'));
+app.use('/api/cards',        require('./routes/cards'));        // multi-source aggregator
 app.use('/api/loans', require('./routes/loans'));
 app.use('/api/fds', require('./routes/fds'));
 
@@ -107,8 +112,13 @@ const startServer = async () => {
       // Sync Sequelize models — alter tables if schema changed (safe in dev)
       try {
         const { sequelize } = require('./models');
-        await sequelize.sync({ alter: process.env.NODE_ENV !== 'production' });
-        console.log('✅ Sequelize models synced to PostgreSQL');
+        await sequelize.sync({ alter: true });
+        console.log('✅ Sequelize models synced to MySQL');
+        
+        // Start weekly auto-update scheduler
+        const { startScheduler } = require('./scraper/scheduler');
+        startScheduler();
+        
       } catch (syncErr) {
         console.warn('⚠️  Sequelize sync warning:', syncErr.message);
       }
