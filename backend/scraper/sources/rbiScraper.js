@@ -162,8 +162,11 @@ function parseRBITable(html, rateType) {
       const rawBank = cells[bankCol] || '';
       // Skip rows that are clearly section headers or empty
       if (!rawBank || rawBank.length < 3 || /^(sl\.?\s*no|s\.no|#)$/i.test(rawBank)) continue;
-      // Skip Indian state/UT names (appear in CPI-by-state publications)
-      if (INDIAN_STATES.has(rawBank.toLowerCase().trim())) continue;
+      // Skip if the text is massively long (happens when RBI tables are poorly formatted)
+      if (rawBank.length > 80) continue;
+      // Skip Indian state/UT names or CPI inflation headers
+      const lowerBank = rawBank.toLowerCase().trim();
+      if (INDIAN_STATES.has(lowerBank) || lowerBank.includes('state/union territory') || lowerBank.includes('cpi inflation')) continue;
       // Skip purely numeric first column (serial numbers)
       if (/^\d+\.?$/.test(rawBank.trim())) {
         // bank name might be in col 1
