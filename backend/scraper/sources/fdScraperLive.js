@@ -159,6 +159,12 @@ function isValidFD(bankName, rate) {
     return false;
   }
 
+  // Reject tenure labels misread as bank names: "1 year", "2 years", "3 months", "1-year tenure"
+  if (/^\d+[-\s]*(year|yr|month|mo)s?(\s+tenure)?$/i.test(name) || /^\d+\s*-\s*\d+\s*(year|month)/i.test(name)) {
+    console.log(`    [FD] REJECT (tenure label, not a bank): "${name}"`);
+    return false;
+  }
+
   // Reject if bank name is very short (likely a column header fragment)
   if (name.length < 3) {
     console.log(`    [FD] REJECT (too short bank name): "${name}"`);
@@ -175,7 +181,7 @@ function isValidFD(bankName, rate) {
   const nameLower  = name.toLowerCase();
   const isKnown    = KNOWN_FD_BANKS.some(kb => nameLower.includes(kb));
   // If cannot match any bank, only reject if it looks like header text
-  const looksLikeHeader = /^(bank|lender|institution|name|sl|#|rate|interest|tenure)$/i.test(name.trim());
+  const looksLikeHeader = /^(bank|lender|institution|name|sl|#|rate|interest|tenure|year|years|month|months|period|duration)$/i.test(name.trim());
   if (looksLikeHeader) {
     console.log(`    [FD] REJECT (header row): "${name}"`);
     return false;

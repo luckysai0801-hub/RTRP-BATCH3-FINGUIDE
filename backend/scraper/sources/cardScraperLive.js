@@ -244,14 +244,30 @@ async function scrapeCardInsider() {
   }
 
   // Fallback A: heading links
+  // Only accept links that look like actual credit card product pages.
+  const ARTICLE_REJECT_PHRASES = [
+    'how to', 'what is', 'review', 'guide', 'lounge', 'airport',
+    'google pay', 'add your', 'against a', 'apply for', 'calculator',
+    'insurance', 'vs ', 'comparison', 'best credit cards', 'top credit cards',
+  ];
+
   if (cards.length < 3) {
     $('h2 a, h3 a, h4 a').each((_, el) => {
       const $a    = $(el);
       const href  = $a.attr('href') || '';
       const text  = $a.text().trim();
       if (!href.includes('cardinsider.com') && !href.startsWith('/')) return;
-      if (!text || text.length < 5 || /^[\w\s]+ credit cards?$/i.test(text)) return;
+      if (!text || text.length < 5 || text.length > 80) return;
+      if (/^[\w\s]+ credit cards?$/i.test(text)) return;
       if (text.split(' ').length < 2) return;
+
+      // Reject blog posts, how-to guides, reviews, listicles
+      const textLower = text.toLowerCase();
+      if (ARTICLE_REJECT_PHRASES.some(p => textLower.includes(p))) return;
+
+      // Must contain at least one card-product keyword to qualify
+      const hasCardKw = CARD_KEYWORDS.some(kw => textLower.includes(kw));
+      if (!hasCardKw) return;
 
       const $container = $a.closest('[class*="card"], [class*="item"], li, article, div');
       const feeRaw     = $container.find('[class*="fee"], [class*="annual"]').first().text().trim();

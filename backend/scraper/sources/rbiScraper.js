@@ -102,6 +102,21 @@ function extractDate(str) {
   return null;
 }
 
+// ── Indian States Blocklist ────────────────────────────────────────────────────
+// RBI sometimes links to CPI-by-state publications. We need to skip rows where
+// the first column is an Indian state/UT name rather than a bank name.
+
+const INDIAN_STATES = new Set([
+  'andaman & nicobar islands', 'andaman nicobar islands', 'andhra pradesh', 'assam',
+  'bihar', 'chandigarh', 'chhattisgarh', 'dadra & nagar haveli', 'dadra nagar haveli',
+  'daman & diu', 'daman diu', 'delhi', 'goa', 'gujarat', 'haryana', 'himachal pradesh',
+  'jammu & kashmir', 'jammu kashmir', 'jharkhand', 'karnataka', 'kerala', 'lakshadweep',
+  'madhya pradesh', 'maharashtra', 'manipur', 'meghalaya', 'mizoram', 'nagaland',
+  'odisha', 'puducherry', 'punjab', 'rajasthan', 'sikkim', 'tamil nadu', 'telangana',
+  'tripura', 'uttar pradesh', 'uttarakhand', 'west bengal', 'all india',
+  'arunachal pradesh', 'ladakh', 'jammu', 'kashmir',
+]);
+
 // ── HTML Table Parser ──────────────────────────────────────────────────────────
 
 /**
@@ -147,6 +162,8 @@ function parseRBITable(html, rateType) {
       const rawBank = cells[bankCol] || '';
       // Skip rows that are clearly section headers or empty
       if (!rawBank || rawBank.length < 3 || /^(sl\.?\s*no|s\.no|#)$/i.test(rawBank)) continue;
+      // Skip Indian state/UT names (appear in CPI-by-state publications)
+      if (INDIAN_STATES.has(rawBank.toLowerCase().trim())) continue;
       // Skip purely numeric first column (serial numbers)
       if (/^\d+\.?$/.test(rawBank.trim())) {
         // bank name might be in col 1

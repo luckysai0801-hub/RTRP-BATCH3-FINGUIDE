@@ -137,12 +137,21 @@ const LOAN_REJECT_PHRASES = [
 ];
 
 const KNOWN_BANKS = [
-  'hdfc', 'sbi', 'icici', 'axis', 'kotak', 'pnb', 'punjab national',
-  'baroda', 'bank of baroda', 'yes bank', 'indusind', 'idfc', 'au ',
-  'au small', 'canara', 'rbl', 'federal', 'standard chartered', 'hsbc',
-  'citibank', 'citi', 'union bank', 'tata', 'bajaj', 'fullerton',
-  'muthoot', 'iifl', 'hero', 'aditya birla', 'l&t', 'piramal',
-  'home credit', 'incred', 'lendingkart', 'capital first',
+  // Private banks
+  'hdfc', 'icici', 'axis', 'kotak', 'yes bank', 'indusind', 'idfc', 'rbl',
+  'federal', 'au ', 'au small', 'standard chartered', 'hsbc', 'citibank', 'citi',
+  'karnataka bank', 'city union', 'dhanlaxmi', 'karur vysya', 'south indian bank',
+  // PSU banks
+  'sbi', 'pnb', 'punjab national', 'baroda', 'bank of baroda', 'canara',
+  'union bank', 'bank of india', 'bank of maharashtra', 'central bank',
+  'indian bank', 'indian overseas', 'uco', 'punjab & sind', 'punjab and sind',
+  'idbi', 'allahabad', 'andhra bank', 'syndicate', 'united bank',
+  // NBFCs & fintechs
+  'tata', 'bajaj', 'fullerton', 'muthoot', 'iifl', 'hero', 'aditya birla',
+  'l&t', 'piramal', 'home credit', 'incred', 'lendingkart', 'capital first',
+  'cholamandalam', 'chola', 'hdb financial', 'hdbfs', 'mahindra finance',
+  'mannapuram', 'moneyview', 'poonawalla', 'shriram', 'navi', 'cashe',
+  'kreditbee', 'loantap', 'early salary', 'fibe', 'prefr',
 ];
 
 /**
@@ -427,6 +436,15 @@ async function scrapeBankBazaar() {
       const bankRaw = cells[0];
       if (!bankRaw || bankRaw.length < 3) return;
 
+      // Skip garbage / header rows
+      if (/^(loan amount|loan tenure|processing fee|bank|lender|sl|#|\d+\.?)/i.test(bankRaw.trim())) return;
+
+      // Strip trailing loan-type label BankBazaar embeds in the bank name cell
+      const cleanBank = bankRaw
+        .replace(/\s*(personal loan|home loan|business loan|vehicle loan|car loan)\s*$/i, '')
+        .trim();
+      if (!cleanBank || cleanBank.length < 3) return;
+
       const rateStr = cells[1] || '';
       const parsedR = parseRateRange(rateStr);
       if (!parsedR) return;
@@ -434,8 +452,8 @@ async function scrapeBankBazaar() {
       const procFee = parseProcessingFee(cells[2] || '');
       const maxAmt  = parseAmount(cells[3] || '') || 4000000;
       loans.push({
-        bankName:      canonicalBankName(bankRaw),
-        loanName:      `${canonicalBankName(bankRaw)} Personal Loan`,
+        bankName:      canonicalBankName(cleanBank),
+        loanName:      `${canonicalBankName(cleanBank)} Personal Loan`,
         loanType:      'personal',
         minRate:       parsedR.minRate,
         maxRate:       parsedR.maxRate,
